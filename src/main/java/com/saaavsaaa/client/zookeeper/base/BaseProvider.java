@@ -4,7 +4,6 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -131,11 +130,6 @@ public class BaseProvider implements IProvider {
     public void executeContention(final String nodeBeCompete, final LeaderElection election) throws KeeperException, InterruptedException {
         election.executeContention(rootNode, this);
     }
-    
-    /*@Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
-    }*/
     
     @Override
     public void resetConnection() {

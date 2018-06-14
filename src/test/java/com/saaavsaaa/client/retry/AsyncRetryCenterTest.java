@@ -9,7 +9,7 @@ import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.section.StrategyType;
+import com.saaavsaaa.client.utility.constant.StrategyType;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;

@@ -8,13 +8,12 @@ import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.zookeeper.section.StrategyType;
+import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.strategy.*;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,17 +52,10 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized boolean blockUntilConnected(int wait, TimeUnit units) throws InterruptedException {
-        long maxWait = units != null ? TimeUnit.MILLISECONDS.convert(wait, units) : 0;
-    
-        while (!holder.isConnected()){
-            long waitTime = maxWait - 30;
-            if (waitTime <= 0){
-                return holder.isConnected();
-            }
-            wait(30);
-        }
-        return true;
+    public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
+        holder = new Holder(getContext());
+        holder.start(wait, units);
+        return holder.isConnected();
     }
     
     @Override
@@ -82,28 +74,28 @@ public abstract class BaseClient implements IClient {
         }
         
         IProvider provider = new BaseProvider(rootNode, holder, watched, authorities);
-        switch (strategyType){
-            case USUAL:{
+        switch (strategyType) {
+            case USUAL: {
                 strategy = new UsualStrategy(provider);
                 break;
             }
-            case CONTEND:{
+            case CONTEND: {
                 strategy = new ContentionStrategy(provider);
                 break;
             }
-            case SYNC_RETRY:{
+            case SYNC_RETRY: {
                 strategy = new SyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
                 break;
             }
-            case ASYNC_RETRY:{
+            case ASYNC_RETRY: {
                 strategy = new AsyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
                 break;
             }
-            case ALL_ASYNC_RETRY:{
+            case ALL_ASYNC_RETRY: {
                 strategy = new AllAsyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
                 break;
             }
-            default:{
+            default: {
                 strategy = new UsualStrategy(provider);
                 break;
             }

@@ -4,8 +4,7 @@ import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.AsyncRetryCenter;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.section.StrategyType;
+import com.saaavsaaa.client.utility.constant.StrategyType;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Before;
 
