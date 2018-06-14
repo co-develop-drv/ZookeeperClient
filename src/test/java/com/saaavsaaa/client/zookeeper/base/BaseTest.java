@@ -24,17 +24,12 @@ public class BaseTest {
     }
     
     @Test
-    public void testNotStart() throws IOException, InterruptedException {
+    public void testDStart() throws IOException, InterruptedException {
         TestClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
         boolean result = testClient.start(100, TimeUnit.MILLISECONDS);
         assert !result;
         System.out.println(result);
         testClient.close();
-        
-        testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
-        result = testClient.start(10000, TimeUnit.MILLISECONDS);
-        assert result;
-        System.out.println(result);
-        testClient.close();
     }
+
 }
