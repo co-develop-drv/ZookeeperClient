@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
+/*
  * Created by aaa
  */
 public class PathNode {
@@ -26,29 +26,44 @@ public class PathNode {
         this.value = value;
     }
     
+    /**
+     * get children.
+     *
+     * @return children
+     */
     public Map<String, PathNode> getChildren() {
         return children;
     }
     
-    public String getKey(){
+    /**
+     * get key.
+     *
+     * @return node key
+     */
+    public String getKey() {
         return this.nodeKey;
     }
     
+    /**
+     * attach child node.
+     *
+     * @param node node
+     */
     public void attachChild(final PathNode node) {
         this.children.put(node.nodeKey, node);
     }
     
     
-    PathNode set(final Iterator<String> iterator, final String value){
+    PathNode set(final Iterator<String> iterator, final String value) {
         String key = iterator.next();
         logger.debug("PathNode set:{},value:{}", key, value);
         PathNode node = children.get(key);
-        if (node == null){
+        if (node == null) {
             logger.debug("set children haven't:{}", key);
             node = new PathNode(key);
             children.put(key, node);
         }
-        if (iterator.hasNext()){
+        if (iterator.hasNext()) {
             node.set(iterator, value);
         } else {
             node.setValue(value.getBytes(Constants.UTF_8));
@@ -56,15 +71,15 @@ public class PathNode {
         return node;
     }
     
-    PathNode get(final Iterator<String> iterator){
+    PathNode get(final Iterator<String> iterator) {
         String key = iterator.next();
         logger.debug("get:{}", key);
         PathNode node = children.get(key);
-        if (node == null){
+        if (node == null) {
             logger.debug("get children haven't:{}", key);
             return null;
         }
-        if (iterator.hasNext()){
+        if (iterator.hasNext()) {
             return node.get(iterator);
         }
         return node;
@@ -80,16 +95,16 @@ public class PathNode {
     
     @Deprecated
     PathNode get(final int index, final String path) {
-        if (children.isEmpty()){
+        if (children.isEmpty()) {
             logger.debug("get children haven't:{},index:{}", path, index);
             return null;
         }
-        if (children.containsKey(path)){
+        if (children.containsKey(path)) {
             return children.get(path);
         }
         int nextSeparate = path.indexOf(Constants.PATH_SEPARATOR, index);
         logger.debug("get nextSeparate:{}", nextSeparate);
-        if (nextSeparate == -1){
+        if (nextSeparate == -1) {
             nextSeparate = path.length() - 1;
         }
         

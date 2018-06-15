@@ -7,7 +7,7 @@ import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/**
+/*
  * Created by aaa
  */
 public interface IClient extends IAction, IGroupAction {

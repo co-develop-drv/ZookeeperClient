@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.DelayQueue;
 
-/**
+/*
+ * async retry center
+ *
  * Created by aaa
  */
 public enum AsyncRetryCenter {
@@ -19,17 +21,25 @@ public enum AsyncRetryCenter {
     private boolean started = false;
     private DelayRetryPolicy delayRetryPolicy;
     
-    public void init(DelayRetryPolicy delayRetryPolicy) {
+    /**
+     * init.
+     *
+     * @param delayRetryPolicy delayRetryPolicy
+     */
+    public void init(final DelayRetryPolicy delayRetryPolicy) {
         logger.debug("delayRetryPolicy init");
-        if (delayRetryPolicy == null){
+        if (delayRetryPolicy == null) {
             logger.warn("delayRetryPolicy is null and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
-            delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
+            this.delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         }
         this.delayRetryPolicy = delayRetryPolicy;
     }
     
-    public synchronized void start(){
-        if (started){
+    /**
+     * start.
+     */
+    public synchronized void start() {
+        if (started) {
             return;
         }
         retryThread.setName("retry-thread");
@@ -37,8 +47,13 @@ public enum AsyncRetryCenter {
         this.started = true;
     }
     
-    public void add(BaseOperation operation){
-        if (delayRetryPolicy == null){
+    /**
+     * add async operation.
+     *
+     * @param operation operation
+     */
+    public void add(final BaseOperation operation) {
+        if (delayRetryPolicy == null) {
             logger.warn("delayRetryPolicy no init and auto init with DelayRetryPolicy.newNoInitDelayPolicy");
             delayRetryPolicy = DelayRetryPolicy.newNoInitDelayPolicy();
         }

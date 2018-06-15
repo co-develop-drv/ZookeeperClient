@@ -2,7 +2,7 @@ package com.saaavsaaa.client.utility;
 
 import java.util.ResourceBundle;
 
-/**
+/*
  * Created by aaa
  */
 public enum Properties {
@@ -14,42 +14,42 @@ public enum Properties {
         bundle = ResourceBundle.getBundle("client");
     }
     
-    public String getClientId(){
+    public String getClientId() {
         // ResourceBundle caches the value in Thread
         String clientId = bundle.getString("client.id");
-        if (StringUtil.isNullOrBlank(clientId)){
+        if (StringUtil.isNullOrBlank(clientId)) {
             throw new IllegalArgumentException("client.id doesn't exist");
         }
         return clientId;
     }
     
-    public boolean watchOn(){
+    public boolean watchOn() {
         String result = bundle.getString("client.watch.on");
-        if (StringUtil.isNullOrBlank(result)){
+        if (StringUtil.isNullOrBlank(result)) {
             throw new IllegalArgumentException("client.watch.on doesn't exist");
         }
         return "up".equals(result);
     }
     
-    public long getThreadInitialDelay(){
+    public long getThreadInitialDelay() {
         String result = bundle.getString("client.thread.delay");
-        if (StringUtil.isNullOrBlank(result)){
+        if (StringUtil.isNullOrBlank(result)) {
             throw new IllegalArgumentException("client.thread.delay doesn't exist");
         }
         return Long.valueOf(result);
     }
     
-    public long getThreadPeriod(){
+    public long getThreadPeriod() {
         String result = bundle.getString("client.thread.period");
-        if (StringUtil.isNullOrBlank(result)){
+        if (StringUtil.isNullOrBlank(result)) {
             throw new IllegalArgumentException("client.thread.period doesn't exist");
         }
         return Long.valueOf(result);
     }
     
-    public int getNodeElectionCount(){
+    public int getNodeElectionCount() {
         String result = bundle.getString("node.election.count");
-        if (StringUtil.isNullOrBlank(result)){
+        if (StringUtil.isNullOrBlank(result)) {
             throw new IllegalArgumentException("node.election.count doesn't exist");
         }
         return Integer.valueOf(result);

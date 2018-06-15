@@ -4,7 +4,7 @@ import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.action.IProvider;
 import org.apache.zookeeper.KeeperException;
 
-/**
+/*
  * Created by aaa
  */
 public abstract class BaseStrategy implements IExecStrategy {

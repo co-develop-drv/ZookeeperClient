@@ -15,7 +15,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
+/*
+ * zookeeper connection holder
+ *
  * Created by aaa
  */
 public class Holder {
@@ -104,7 +106,7 @@ public class Holder {
             connected.set(false);
             logger.debug("zk closed");
             this.context.close();
-        } catch (Exception ee){
+        } catch (Exception ee) {
             logger.warn("Holder close:{}", ee.getMessage());
         }
     }

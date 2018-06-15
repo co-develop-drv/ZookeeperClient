@@ -12,7 +12,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
+/*
  * Created by aaa
  * It is not recommended to be used as a global variable
  */
@@ -38,43 +38,51 @@ public abstract class LeaderElection {
         return success;
     }
     
-    /*
-    * listener will be register when the contention of the path is unsuccessful
-    */
-    public void executeContention(final String nodeBeCompete, final IProvider provider) throws KeeperException, InterruptedException {
+    /**
+     * listener will be register when the contention of the path is unsuccessful.
+     *
+     * @param nodeBeContend nodeBeContend
+     * @param provider provider
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
-        final String realNode = provider.getRealPath(nodeBeCompete);
+        final String realNode = provider.getRealPath(nodeBeContend);
         final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
         canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
             @Override
-            public void process(WatchedEvent event) {
+            public void process(final WatchedEvent event) {
                 try {
                     retryCount--;
-                    if (retryCount < 0){
+                    if (retryCount < 0) {
                         logger.info("Election node exceed retry count");
                         return;
                     }
                     executeContention(realNode, provider);
-                } catch (Exception ee){
+                } catch (Exception ee) {
                     logger.error("Listener Exception executeContention:{}", ee.getMessage(), ee);
                 }
             }
         });
     
-        if (canBegin){
+        if (canBegin) {
             try {
                 action();
                 done = true;
                 callback();
-            } catch (Exception ee){
+            } catch (Exception ee) {
                 logger.error("action Exception executeContention:{}", ee.getMessage(), ee);
             }
             provider.delete(contendNode);
         }
     }
     
-    public void waitDone(){
-        while (!done){
+    /**
+     * wait done.
+     */
+    public void waitDone() {
+        while (!done) {
             try {
                 Thread.sleep(10L);
             } catch (InterruptedException e) {
@@ -84,7 +92,19 @@ public abstract class LeaderElection {
     }
     
 //    public abstract void actionWhenUnreached() throws KeeperException, InterruptedException;
+    
+    /**
+     * contend exec.
+     *
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public abstract void action() throws KeeperException, InterruptedException;
     
-    public void callback(){}
+    /**
+     * callback.
+     */
+    public void callback() {
+        
+    }
 }

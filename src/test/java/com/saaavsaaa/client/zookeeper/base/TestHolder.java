@@ -16,7 +16,7 @@ public class TestHolder extends Holder {
     
     private volatile AtomicBoolean connected0 = new AtomicBoolean();
     
-     TestHolder(final BaseContext context) {
+    TestHolder(final BaseContext context) {
         super(context);
     }
     
@@ -46,6 +46,10 @@ public class TestHolder extends Holder {
                 return;
             }
         }
+    }
+    
+    public void setConnected0(boolean is){
+        connected0.set(is);
     }
     
     public boolean isConnected0() {

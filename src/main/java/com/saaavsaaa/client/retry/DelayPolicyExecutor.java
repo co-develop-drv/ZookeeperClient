@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-/**
+/*
  * Created by aaa
  */
 public class DelayPolicyExecutor {
@@ -27,18 +27,31 @@ public class DelayPolicyExecutor {
 //        next();
     }
     
+    /**
+     * has next.
+     *
+     * @return has next
+     */
     public boolean hasNext() {
         return executeCount < delayRetryPolicy.getRetryCount();
     }
     
+    /**
+     * next exec tick.
+     *
+     * @return next exec tick
+     */
     public long getNextTick() {
         return executeTick;
     }
     
+    /**
+     * next.
+     */
     public void next() {
         executeCount ++;
         long sleep = delayRetryPolicy.getBaseDelay() * Math.max(1, this.random.nextInt(1 << delayRetryPolicy.getRetryCount() + 1));
-        if (sleep < delayRetryPolicy.getDelayUpperBound()){
+        if (sleep < delayRetryPolicy.getDelayUpperBound()) {
             executeTick += sleep;
         } else {
             executeTick += delayRetryPolicy.getDelayUpperBound();

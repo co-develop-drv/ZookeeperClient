@@ -7,10 +7,10 @@ import org.apache.zookeeper.Watcher;
 
 import java.util.List;
 
-/**
+/*
  * Created by aaa
  */
-public interface IAction {
+interface IAction {
     /**
      * get string type data.
      *

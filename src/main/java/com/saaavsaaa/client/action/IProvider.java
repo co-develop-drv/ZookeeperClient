@@ -10,25 +10,149 @@ import org.apache.zookeeper.Watcher;
 import java.util.List;
 import java.util.Stack;
 
-/**
+/*
  * Created by aaa
  */
 public interface IProvider {
-    String getDataString(final String key) throws KeeperException, InterruptedException;
-    byte[] getData(final String key) throws KeeperException, InterruptedException;
-    void getData(final String key, final AsyncCallback.DataCallback callback, final Object ctx) throws KeeperException, InterruptedException;
-    boolean exists(final String key) throws KeeperException, InterruptedException;
-    boolean exists(final String key, final Watcher watcher) throws KeeperException, InterruptedException;
-    List<String> getChildren(final String key) throws KeeperException, InterruptedException;
-    void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException;
-    void update(final String key, final String value) throws KeeperException, InterruptedException;
-    void delete(final String key) throws KeeperException, InterruptedException;
-    void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException;
     
-    String getRealPath(final String path);
-    List<String> getNecessaryPaths(final String key);
-    Stack<String> getDeletingPaths(final String key);
-    void executeContention(final LeaderElection election) throws KeeperException, InterruptedException;
+    /**
+     * get string type data.
+     *
+     * @param key key
+     * @return data String
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    String getDataString(String key) throws KeeperException, InterruptedException;
     
+    /**
+     * get string type data.
+     *
+     * @param key key
+     * @return data
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    byte[] getData(String key) throws KeeperException, InterruptedException;
+    
+    /**
+     * get string type data.
+     *
+     * @param key key
+     * @param callback callback
+     * @param ctx ctx
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    void getData(String key, AsyncCallback.DataCallback callback, Object ctx) throws KeeperException, InterruptedException;
+    
+    /**
+     * check exist.
+     *
+     * @param key key
+     * @return exist
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    boolean exists(String key) throws KeeperException, InterruptedException;
+    
+    /**
+     * check exist.
+     *
+     * @param key key
+     * @param watcher watcher
+     * @return exist
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    boolean exists(String key, Watcher watcher) throws KeeperException, InterruptedException;
+    
+    /**
+     * get children's keys.
+     *
+     * @param key key
+     * @return exist
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    List<String> getChildren(String key) throws KeeperException, InterruptedException;
+    
+    /**
+     * only create target node.
+     *
+     * @param key key
+     * @param value value
+     * @param createMode createMode
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    void create(String key, String value, CreateMode createMode) throws KeeperException, InterruptedException;
+    
+    /**
+     * update.
+     *
+     * @param key key
+     * @param value value
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    void update(String key, String value) throws KeeperException, InterruptedException;
+    
+    /**
+     * only delete target node..
+     *
+     * @param key key
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    void delete(String key) throws KeeperException, InterruptedException;
+    
+    /**
+     * only delete target node..
+     *
+     * @param key key
+     * @param callback callback
+     * @param ctx ctx
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    void delete(String key, AsyncCallback.VoidCallback callback, Object ctx) throws KeeperException, InterruptedException;
+    
+    /**
+     * get real path with root.
+     *
+     * @param path path
+     * @return real path
+     */
+    String getRealPath(String path);
+    
+    /**
+     * get path nodes that needed create.
+     *
+     * @param key key
+     * @return all path nodes
+     */
+    List<String> getNecessaryPaths(String key);
+    
+    /**
+     * get path nodes that needed delete.
+     *
+     * @param key key
+     * @return all path nodes
+     */
+    Stack<String> getDeletingPaths(String key);
+    
+    /**
+     * contention exec.
+     *
+     * @param election election
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
+    void executeContention(LeaderElection election) throws KeeperException, InterruptedException;
+    
+    /**
+     * reset connection.
+     */
     void resetConnection();
 }

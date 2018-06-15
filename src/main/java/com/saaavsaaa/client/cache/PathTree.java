@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
+ * zookeeper cache tree
+ *
  * Created by aaa
  * todo provider
  */
@@ -34,25 +36,31 @@ public final class PathTree {
     private ScheduledExecutorService cacheService;
     private final IClient client;
     private final IProvider provider;
-    private PathStatus Status;
+    private PathStatus status;
     private boolean closed = false;
     
     public PathTree(final String root, final IClient client) {
         this.rootNode.set(new PathNode(root));
-        this.Status = PathStatus.RELEASE;
+        this.status = PathStatus.RELEASE;
         this.client = client;
         this.provider = ((BaseClient)client).getStrategy().getProvider();
     }
     
+    /**
+     * load data.
+     *
+     * @throws KeeperException Zookeeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public void load() throws KeeperException, InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
-        if (closed){
+        if (closed) {
             return;
         }
         try {
-            if (Status == Status.RELEASE) {
-                logger.debug("loading Status:{}", Status);
+            if (status == PathStatus.RELEASE) {
+                logger.debug("loading Status:{}", status);
                 this.setStatus(PathStatus.CHANGING);
         
                 PathNode newRoot = new PathNode(rootNode.get().getKey());
@@ -63,7 +71,7 @@ public final class PathTree {
         
                 this.setStatus(PathStatus.RELEASE);
 //                watch();
-                logger.debug("loading release:{}", Status);
+                logger.debug("loading release:{}", status);
             } else {
                 logger.info("loading but cache status not release");
                 try {
@@ -79,11 +87,11 @@ public final class PathTree {
     }
     
     private void attechIntoNode(final List<String> children, final PathNode pathNode) throws KeeperException, InterruptedException {
-        if (closed){
+        if (closed) {
             return;
         }
         logger.debug("attechIntoNode children:{}", children);
-        if (children.isEmpty()){
+        if (children.isEmpty()) {
             logger.info("attechIntoNode there are no children");
             return;
         }
@@ -96,10 +104,15 @@ public final class PathTree {
         }
     }
     
-    public void refreshPeriodic(final long period){
+    /**
+     * start thread pool period load data.
+     *
+     * @param period period
+     */
+    public void refreshPeriodic(final long period) {
         final ReentrantLock lock = this.lock;
         lock.lock();
-        if (closed){
+        if (closed) {
             return;
         }
         try {
@@ -137,31 +150,29 @@ public final class PathTree {
         }
     }
     
-    public void stopRefresh(){
+    /**
+     * stop thread pool period load data.
+     */
+    public void stopRefresh() {
         cacheService.shutdown();
         executorStart = false;
         logger.debug("stopRefresh");
     }
     
-    public void watch(){
+    /**
+     * watch data change.
+     */
+    public void watch() {
         watch(new Listener(rootNode.get().getKey()) {
             @Override
-            public void process(WatchedEvent event) {
+            public void process(final WatchedEvent event) {
                 String path = event.getPath();
                 logger.debug("PathTree Watch event:{}", event.toString());
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
                     case NodeChildrenChanged: {
-                        try {
-                            String value = Constants.NOTHING_VALUE;
-                            if (!path.equals(getRootNode().getKey())){
-                                value = provider.getDataString(path);
-                            }
-                            put(path, value);
-                        } catch (Exception e) {
-                            logger.error("PathTree put error : " + e.getMessage());
-                        }
+                        processNodeChange(event.getPath());
                         break;
                     }
                     case NodeDeleted: {
@@ -175,8 +186,27 @@ public final class PathTree {
         });
     }
     
-    public void watch(final Listener listener){
-        if (closed){
+    private void processNodeChange(final String path) {
+        try {
+            String value = Constants.NOTHING_VALUE;
+            if (!path.equals(getRootNode().getKey())) {
+                value = provider.getDataString(path);
+            }
+            put(path, value);
+            // CHECKSTYLE:OFF
+        } catch (Exception e) {
+            // CHECKSTYLE:ON
+            logger.error("PathTree put error : " + e.getMessage());
+        }
+    }
+    
+    /**
+     * watch data change.
+     *
+     * @param listener listener
+     */
+    public void watch(final Listener listener) {
+        if (closed) {
             return;
         }
         final String key = listener.getKey();
@@ -192,26 +222,37 @@ public final class PathTree {
     }
     
     public PathStatus getStatus() {
-        return Status;
+        return status;
     }
     
     public void setStatus(final PathStatus status) {
-        Status = status;
+        this.status = status;
     }
     
+    /**
+     * get root node.
+     *
+     * @return root node
+     */
     public PathNode getRootNode() {
         return rootNode.get();
     }
     
-    public byte[] getValue(final String path){
-        if (closed){
+    /**
+     * get node value.
+     *
+     * @param path path
+     * @return node data
+     */
+    public byte[] getValue(final String path) {
+        if (closed) {
             return null;
         }
         PathNode node = get(path);
         return null == node ? null : node.getValue();
     }
     
-    private Iterator<String> keyIterator(final String path){
+    private Iterator<String> keyIterator(final String path) {
         List<String> nodes = PathUtil.getShortPathNodes(path);
         logger.debug("keyIterator path{},nodes:{}", path, nodes);
         Iterator<String> iterator = nodes.iterator();
@@ -219,13 +260,19 @@ public final class PathTree {
         return iterator;
     }
     
-    public List<String> getChildren(String path) {
-        if (closed){
+    /**
+     * get children.
+     *
+     * @param path path
+     * @return children
+     */
+    public List<String> getChildren(final String path) {
+        if (closed) {
             return null;
         }
         PathNode node = get(path);
         List<String> result = new ArrayList<>();
-        if (node == null){
+        if (node == null) {
             logger.info("getChildren null");
             return result;
         }
@@ -234,16 +281,16 @@ public final class PathTree {
             return result;
         }
         Iterator<PathNode> children = node.getChildren().values().iterator();
-        while (children.hasNext()){
+        while (children.hasNext()) {
             result.add(new String(children.next().getValue()));
         }
         return result;
     }
     
-    private PathNode get(final String path){
+    private PathNode get(final String path) {
         logger.debug("PathTree get:{}", path);
         PathUtils.validatePath(path);
-        if (path.equals(rootNode.get().getKey())){
+        if (path.equals(rootNode.get().getKey())) {
             return rootNode.get();
         }
         Iterator<String> iterator = keyIterator(path);
@@ -254,17 +301,23 @@ public final class PathTree {
         return null;
     }
     
+    /**
+     * put node.
+     *
+     * @param path path
+     * @param value value
+     */
     public void put(final String path, final String value) {
         final ReentrantLock lock = this.lock;
         lock.lock();
-        if (closed){
+        if (closed) {
             return;
         }
         try {
             logger.debug("cache put:{},value:{}", path, value);
             PathUtils.validatePath(path);
-            logger.debug("put Status:{}", Status);
-            if (Status == Status.RELEASE) {
+            logger.debug("put Status:{}", status);
+            if (status == PathStatus.RELEASE) {
                 if (path.equals(rootNode.get().getKey())) {
                     rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
                     return;
@@ -286,11 +339,16 @@ public final class PathTree {
         }
     }
     
-    public void delete(String path) {
+    /**
+     * delete node.
+     *
+     * @param path path
+     */
+    public void delete(final String path) {
         logger.debug("PathTree begin delete:{}", path);
         final ReentrantLock lock = this.lock;
         lock.lock();
-        if (closed){
+        if (closed) {
             return;
         }
         try {
@@ -304,24 +362,27 @@ public final class PathTree {
         }
     }
     
-    public  void close(){
+    /**
+     * close.
+     */
+    public void close() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         this.closed = true;
         try {
-            if (executorStart){
+            if (executorStart) {
                 stopRefresh();
             }
             deleteAllChildren(rootNode.get());
-        } catch (Exception ee){
+        } catch (Exception ee) {
             logger.warn("PathTree close:{}", ee.getMessage());
         } finally {
             lock.unlock();
         }
     }
     
-    private void deleteAllChildren(PathNode node){
-        if (node.getChildren().isEmpty()){
+    private void deleteAllChildren(final PathNode node) {
+        if (node.getChildren().isEmpty()) {
             return;
         }
         for (String one : node.getChildren().keySet()) {

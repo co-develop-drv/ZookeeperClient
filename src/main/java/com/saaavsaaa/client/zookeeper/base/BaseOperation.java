@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-/**
+/*
+ * base async retry operation.
+ *
  * Created by aaa
  */
 public abstract class BaseOperation implements Delayed {
@@ -22,45 +24,49 @@ public abstract class BaseOperation implements Delayed {
         this.provider = provider;
     }
     
-    public void setRetrial(final DelayPolicyExecutor delayPolicyExecutor){
+    public void setRetrial(final DelayPolicyExecutor delayPolicyExecutor) {
         this.delayPolicyExecutor = delayPolicyExecutor;
     }
     
+    /**
+     * queue precedence.
+     */
     @Override
-    public long getDelay(TimeUnit unit) {
+    public int compareTo(final Delayed delayed) {
+        return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
+    }
+    
+    @Override
+    public long getDelay(final TimeUnit unit) {
         long absoluteBlock = this.delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
         logger.debug("queue getDelay block:{}", absoluteBlock);
         long result = unit.convert(absoluteBlock, TimeUnit.MILLISECONDS);
         return result;
     }
-    
-    /**
-     * queue precedence
-     */
-    @Override
-    public int compareTo(Delayed delayed) {
-        return (int) (this.getDelay(TimeUnit.MILLISECONDS) - delayed.getDelay(TimeUnit.MILLISECONDS));
-    }
 
     protected abstract void execute() throws KeeperException, InterruptedException;
     
-    /*
-    * @Return whether or not continue enqueue
-    */
+    /**
+     * queue precedence.
+     *
+     * @return whether or not continue enqueue
+     * @throws KeeperException Keeper Exception
+     * @throws InterruptedException InterruptedException
+     */
     public boolean executeOperation() throws KeeperException, InterruptedException {
         boolean result;
         try {
             execute();
             result = true;
         } catch (KeeperException ee) {
-            if (Connection.needReset(ee)){
+            if (Connection.needReset(ee)) {
                 provider.resetConnection();
                 result = false;
             } else {
                 throw ee;
             }
         }
-        if (!result && delayPolicyExecutor.hasNext()){
+        if (!result && delayPolicyExecutor.hasNext()) {
             delayPolicyExecutor.next();
             return true;
         }

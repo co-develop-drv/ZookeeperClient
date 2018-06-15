@@ -2,7 +2,7 @@ package com.saaavsaaa.client.utility.constant;
 
 import java.nio.charset.Charset;
 
-/**
+/*
  * Created by aaa
  */
 public final class Constants {

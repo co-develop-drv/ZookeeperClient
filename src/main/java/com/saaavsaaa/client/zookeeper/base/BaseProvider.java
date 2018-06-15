@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
+/*
  * Created by aaa
  */
 public class BaseProvider implements IProvider {
@@ -26,7 +26,7 @@ public class BaseProvider implements IProvider {
     protected final List<ACL> authorities;
     protected final String rootNode;
     
-    public BaseProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities){
+    public BaseProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
         this.rootNode = rootNode;
         this.holder = holder;
         this.watched = watched;
@@ -77,7 +77,7 @@ public class BaseProvider implements IProvider {
         } catch (KeeperException.NoNodeException e) {
             logger.error("BaseProvider createCurrentOnly:{}", e.getMessage(), e);
             // I don't know whether it will happen or not, if root watcher don't update rootExist timely
-            if (!exists(rootNode)){
+            if (!exists(rootNode)) {
                 logger.info("BaseProvider createCurrentOnly root not exist:{}", count.get());
                 Thread.sleep(50);
                 if (count.incrementAndGet() < 3) {
@@ -106,12 +106,12 @@ public class BaseProvider implements IProvider {
     
     
     @Override
-    public String getRealPath(String path) {
+    public String getRealPath(final String path) {
         return PathUtil.getRealPath(rootNode, path);
     }
     
     @Override
-    public List<String> getNecessaryPaths(final String key){
+    public List<String> getNecessaryPaths(final String key) {
         List<String> nodes = PathUtil.getPathOrderNodes(rootNode, key);
         nodes.remove(rootNode);
         return nodes;

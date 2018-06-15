@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
+/*
  * Created by aaa
  */
 public class RetryThread extends Thread {
@@ -36,7 +36,7 @@ public class RetryThread extends Thread {
     }
 
     @Override
-    public void run(){
+    public void run() {
         logger.debug("RetryThread start");
         for (;;) {
             final BaseOperation operation;
@@ -57,7 +57,7 @@ public class RetryThread extends Thread {
                         result = false;
                         logger.error("retry disrupt operation:{}, e:{}", operation.toString(), e.getMessage());
                     }
-                    if (result){
+                    if (result) {
                         queue.offer(operation);
                         logger.debug("enqueue again operation:{}", operation.toString());
                     }
@@ -66,6 +66,7 @@ public class RetryThread extends Thread {
         }
     }
     
+    // copy google
     final void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
         Thread thread = new Thread(new Runnable() {
             @Override

@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
-/**
+/*
  * Created by aaa
  */
 public abstract class BaseClientFactory {
@@ -21,9 +21,16 @@ public abstract class BaseClientFactory {
     protected List<ACL> authorities;
     protected BaseContext context;
     
+    /**
+     * start.
+     *
+     * @return client
+     * @throws IOException IO Exception
+     * @throws InterruptedException InterruptedException
+     */
     public IClient start() throws IOException, InterruptedException {
         client.setRootNode(namespace);
-        if(scheme == null) {
+        if (scheme == null) {
             authorities = OPEN_ACL_UNSAFE;
         }
         client.setAuthorities(scheme , auth, authorities);

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-/**
+/*
  * Created by aaa
  */
 public abstract class BaseClient implements IClient {
@@ -66,9 +66,9 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public synchronized void useExecStrategy(StrategyType strategyType) {
+    public synchronized void useExecStrategy(final StrategyType strategyType) {
         logger.debug("useExecStrategy:{}", strategyType);
-        if (strategies.containsKey(strategyType)){
+        if (strategies.containsKey(strategyType)) {
             strategy = strategies.get(strategyType);
             return;
         }
@@ -104,8 +104,8 @@ public abstract class BaseClient implements IClient {
         strategies.put(strategyType, strategy);
     }
     
-    void registerWatch(final Listener globalListener){
-        if (context.globalListener != null){
+    void registerWatch(final Listener globalListener) {
+        if (context.globalListener != null) {
             logger.warn("global listener can only register one");
             return;
         }
@@ -114,7 +114,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void registerWatch(final String key, final Listener listener){
+    public void registerWatch(final String key, final Listener listener) {
         String path = PathUtil.getRealPath(rootNode, key);
         listener.setPath(path);
         context.getWatchers().put(listener.getKey(), listener);
@@ -122,12 +122,12 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void unregisterWatch(final String key){
-        if (StringUtil.isNullOrBlank(key)){
+    public void unregisterWatch(final String key) {
+        if (StringUtil.isNullOrBlank(key)) {
             throw new IllegalArgumentException("key should not be blank");
         }
 //        String path = PathUtil.getRealPath(rootNode, key);
-        if (context.getWatchers().containsKey(key)){
+        if (context.getWatchers().containsKey(key)) {
             context.getWatchers().remove(key);
             logger.debug("unregisterWatch:{}", key);
         }
@@ -138,24 +138,24 @@ public abstract class BaseClient implements IClient {
     }
     
    private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
-        if (rootExist){
+        if (rootExist) {
             logger.debug("root exist");
             return;
         }
         try {
-            if (null == holder.getZooKeeper().exists(rootNode, false)){
+            if (null == holder.getZooKeeper().exists(rootNode, false)) {
                 holder.zooKeeper.create(rootNode, date, authorities, CreateMode.PERSISTENT);
             }
             rootExist = true;
             logger.debug("creating root:{}", rootNode);
-        } catch (KeeperException.NodeExistsException ee){
+        } catch (KeeperException.NodeExistsException ee) {
             logger.warn("root create:{}", ee.getMessage());
             rootExist = true;
             return;
         }
         holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
             @Override
-            public void process(WatchedEvent event) {
+            public void process(final WatchedEvent event) {
                 rootExist = false;
             }
         }));
