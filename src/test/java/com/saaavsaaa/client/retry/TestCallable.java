@@ -2,7 +2,6 @@ package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.base.BaseProvider;
-import com.saaavsaaa.client.zookeeper.section.Callable;
 import org.apache.zookeeper.KeeperException;
 
 /**

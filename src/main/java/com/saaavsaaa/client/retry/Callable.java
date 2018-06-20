@@ -1,8 +1,7 @@
-package com.saaavsaaa.client.zookeeper.section;
+package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.retry.DelayPolicyExecutor;
-import com.saaavsaaa.client.retry.DelayRetryPolicy;
+import com.saaavsaaa.client.zookeeper.section.Connection;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ public abstract class Callable<T> {
     protected final DelayPolicyExecutor delayPolicyExecutor;
     protected final IProvider provider;
     private T result;
-    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy){
+    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
         this.provider = provider;
     }
@@ -38,10 +37,8 @@ public abstract class Callable<T> {
         } catch (KeeperException e) {
             logger.warn("exec KeeperException:{}", e.getMessage());
             delayPolicyExecutor.next();
-            if (Connection.needReset(e)){
+            if (Connection.needReset(e)) {
                 provider.resetConnection();
-            } else {
-                throw e;
             }
             execDelay();
         } catch (InterruptedException e) {
@@ -52,7 +49,7 @@ public abstract class Callable<T> {
     protected void execDelay() throws KeeperException, InterruptedException {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
-            if (delay > 0){
+            if (delay > 0) {
                 try {
                     logger.debug("exec delay:{}", delay);
                     Thread.sleep(delay);
