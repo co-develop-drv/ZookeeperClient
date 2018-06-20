@@ -233,6 +233,8 @@ public abstract class BaseClientTest {
         Thread.sleep(100);
         client.deleteCurrentBranch(key);
         assert expected.size() == actual.size();
+        //The acquisition value is after the reception of the event,
+        //so the value may be not equal.
         assert expected.containsAll(actual);
         client.unregisterWatch(listener.getKey());
     }
