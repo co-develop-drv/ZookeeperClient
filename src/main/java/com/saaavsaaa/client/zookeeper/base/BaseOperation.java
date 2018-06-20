@@ -61,10 +61,8 @@ public abstract class BaseOperation implements Delayed {
         } catch (KeeperException ee) {
             if (Connection.needReset(ee)) {
                 provider.resetConnection();
-                result = false;
-            } else {
-                throw ee;
             }
+            result = false;
         }
         if (!result && delayPolicyExecutor.hasNext()) {
             delayPolicyExecutor.next();

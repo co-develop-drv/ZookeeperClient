@@ -6,6 +6,7 @@ import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import com.saaavsaaa.client.zookeeper.operation.DeleteCurrentOperation;
 import com.saaavsaaa.client.zookeeper.operation.UpdateOperation;
+import com.saaavsaaa.client.zookeeper.section.Connection;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -25,34 +26,46 @@ public class AsyncRetryStrategy extends SyncRetryStrategy {
     
     @Override
     public void createCurrentOnly(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
+        String path = getProvider().getRealPath(key);
         try {
-            provider.create(path, value, createMode);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException createCurrentOnly:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(provider, path, value, createMode));
+            getProvider().create(path, value, createMode);
+        } catch (KeeperException e) {
+            if (Connection.needRetry(e)) {
+                logger.warn("AsyncRetryStrategy SessionExpiredException createCurrentOnly:{}", path);
+                AsyncRetryCenter.INSTANCE.add(new CreateCurrentOperation(getProvider(), path, value, createMode));
+            } else {
+                throw e;
+            }
         }
     }
     
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
+        String path = getProvider().getRealPath(key);
         try {
-            provider.update(path, value);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException update:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new UpdateOperation(provider, path, value));
+            getProvider().update(path, value);
+        } catch (KeeperException e) {
+            if (Connection.needRetry(e)) {
+                logger.warn("AsyncRetryStrategy SessionExpiredException update:{}", path);
+                AsyncRetryCenter.INSTANCE.add(new UpdateOperation(getProvider(), path, value));
+            } else {
+                throw e;
+            }
         }
     }
     
     @Override
     public void deleteOnlyCurrent(final String key) throws KeeperException, InterruptedException {
-        String path = provider.getRealPath(key);
+        String path = getProvider().getRealPath(key);
         try {
-            provider.delete(path);
-        } catch (KeeperException.SessionExpiredException ee){
-            logger.warn("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
-            AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(provider, path));
+            getProvider().delete(path);
+        } catch (KeeperException e) {
+            if (Connection.needRetry(e)) {
+                logger.warn("AsyncRetryStrategy SessionExpiredException deleteOnlyCurrent:{}", path);
+                AsyncRetryCenter.INSTANCE.add(new DeleteCurrentOperation(getProvider(), path));
+            } else {
+                throw e;
+            }
         }
     }
 }

@@ -31,29 +31,40 @@ public class Connection {
         this.context = context;
     }
     
-    public static boolean needReset(KeeperException e) throws KeeperException {
+    public static boolean needReset(final KeeperException e) throws KeeperException {
         int code = e.code().intValue();
-        if (!exceptionResets.containsKey(code)){
+        if (!exceptionResets.containsKey(code)) {
             throw e;
         }
         return exceptionResets.get(code);
     }
     
+    /**
+     * need retry.
+     *
+     * @param e e
+     * @return need retry
+     * @throws KeeperException Zookeeper Exception
+     */
+    public static boolean needRetry(final KeeperException e) throws KeeperException {
+        return exceptionResets.containsKey(e);
+    }
+    
     @Deprecated
     public void check(KeeperException e) throws KeeperException {
         int code = e.code().intValue();
-        if (!exceptionResets.containsKey(code)){
+        if (!exceptionResets.containsKey(code)) {
             throw e;
         }
         boolean reset = exceptionResets.get(code);
         try {
-            if (reset){
+            if (reset) {
                 resetConnection();
             } else {
                 // block
 //                block();
             }
-        } catch (Exception ee){
+        } catch (Exception ee) {
             logger.error("check reconnect:{}", ee.getMessage(), ee);
         }
     }
