@@ -16,23 +16,26 @@ public class BaseTransaction {
         throw new UnsupportedOperationException("check zk version!");
     }
     
-    public ZKTransaction delete(final String path){
+    public ZKTransaction delete(final String path) {
         throw new UnsupportedOperationException("check zk version!");
     }
+    
     public ZKTransaction delete(final String path, final int version) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
-    public ZKTransaction check(final String path){
+    public ZKTransaction check(final String path) {
         throw new UnsupportedOperationException("check zk version!");
     }
+    
     public ZKTransaction check(final String path, final int version) {
         throw new UnsupportedOperationException("check zk version!");
     }
     
-    public ZKTransaction setData(final String path, final byte[] data){
+    public ZKTransaction setData(final String path, final byte[] data) {
         throw new UnsupportedOperationException("check zk version!");
     }
+    
     public ZKTransaction setData(final String path, final byte[] data, final int version) {
         throw new UnsupportedOperationException("check zk version!");
     }
