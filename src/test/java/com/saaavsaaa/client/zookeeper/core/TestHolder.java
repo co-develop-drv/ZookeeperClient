@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by aaa
  */
 public class TestHolder extends Holder {
-    private static final CountDownLatch CONNECTING = new CountDownLatch(1);
+    private final CountDownLatch CONNECTING = new CountDownLatch(1);
     
     private volatile AtomicBoolean connected0 = new AtomicBoolean();
     
@@ -34,9 +34,9 @@ public class TestHolder extends Holder {
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
                 try {
-                    System.out.println("begin processConnection wait0:" + this.connected0.get());
+                    System.out.println("begin processConnection wait0:" + this.connected0.get() + " ThreadId : " + Thread.currentThread().getId());
                     Thread.sleep(1000);
-                    System.out.println("processConnection done");
+                    System.out.println("processConnection done. ThreadId : " + Thread.currentThread().getId());
                 } catch (Exception e) {
                     System.out.println("wait " + e.getMessage());
                 }
