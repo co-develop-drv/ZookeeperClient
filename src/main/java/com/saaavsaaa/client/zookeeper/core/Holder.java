@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Holder {
     private static final Logger logger = LoggerFactory.getLogger(Holder.class);
-    private static final CountDownLatch CONNECTING = new CountDownLatch(1);
+    private final CountDownLatch CONNECTING = new CountDownLatch(1);
     
     protected ZooKeeper zooKeeper;
     protected final BaseContext context;
