@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.zookeeper.provider;
 
 import com.saaavsaaa.client.retry.RetryCount;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
-import com.saaavsaaa.client.zookeeper.base.Holder;
+import com.saaavsaaa.client.zookeeper.core.BaseProvider;
+import com.saaavsaaa.client.zookeeper.core.Holder;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.ACL;

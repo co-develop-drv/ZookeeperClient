@@ -5,7 +5,7 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.retry.TestCallable;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.core.BaseClient;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;

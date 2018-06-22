@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.zookeeper.base;
+package com.saaavsaaa.client.zookeeper.core;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;

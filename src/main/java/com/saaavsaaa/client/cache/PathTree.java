@@ -5,7 +5,7 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
+import com.saaavsaaa.client.zookeeper.core.BaseClient;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;

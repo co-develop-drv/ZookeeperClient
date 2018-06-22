@@ -2,7 +2,7 @@ package com.saaavsaaa.client.zookeeper.transaction;
 
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.base.Holder;
+import com.saaavsaaa.client.zookeeper.core.Holder;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by aaa
  */
-public class ZKTransaction {
+public class ZKTransaction extends BaseTransaction {
     private static final Logger logger = LoggerFactory.getLogger(ZKTransaction.class);
     private final Holder holder;
     private final String rootNode;

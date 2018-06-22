@@ -2,9 +2,8 @@ package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
 import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.zookeeper.base.BaseClientTest;
+import com.saaavsaaa.client.zookeeper.core.BaseClientTest;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;

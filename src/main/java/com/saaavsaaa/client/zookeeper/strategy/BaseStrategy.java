@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.zookeeper.base;
+package com.saaavsaaa.client.zookeeper.strategy;
 
 import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.action.IProvider;

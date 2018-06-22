@@ -1,8 +1,6 @@
 package com.saaavsaaa.client.retry.nothing;
 
-import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.base.BaseOperation;
-import org.apache.zookeeper.KeeperException;
+import com.saaavsaaa.client.zookeeper.operation.BaseOperation;
 
 /**
  * Created by aaa

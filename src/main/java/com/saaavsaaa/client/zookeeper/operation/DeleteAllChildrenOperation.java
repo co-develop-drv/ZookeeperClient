@@ -1,7 +1,6 @@
 package com.saaavsaaa.client.zookeeper.operation;
 
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.base.BaseOperation;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.KeeperException;
 

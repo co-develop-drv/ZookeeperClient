@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.zookeeper.section;
 
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.zookeeper.base.BaseClientFactory;
-import com.saaavsaaa.client.zookeeper.base.BaseContext;
+import com.saaavsaaa.client.zookeeper.core.BaseClientFactory;
+import com.saaavsaaa.client.zookeeper.core.BaseContext;
 
 /**
  * Created by aaa

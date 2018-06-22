@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.zookeeper.base;
+package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.StringUtil;

@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.zookeeper.base.BaseClient;
-import com.saaavsaaa.client.zookeeper.base.BaseContext;
+import com.saaavsaaa.client.zookeeper.core.BaseClient;
+import com.saaavsaaa.client.zookeeper.core.BaseContext;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.*;

@@ -4,7 +4,7 @@ import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.base.BaseProvider;
+import com.saaavsaaa.client.zookeeper.core.BaseProvider;
 import com.saaavsaaa.client.zookeeper.section.Callback;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;

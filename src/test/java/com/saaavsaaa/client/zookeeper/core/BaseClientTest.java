@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.zookeeper.base;
+package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
@@ -10,7 +10,6 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;

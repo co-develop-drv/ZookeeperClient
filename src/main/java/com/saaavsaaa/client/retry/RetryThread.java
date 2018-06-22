@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.retry;
 
-import com.saaavsaaa.client.zookeeper.base.BaseOperation;
+import com.saaavsaaa.client.zookeeper.operation.BaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
