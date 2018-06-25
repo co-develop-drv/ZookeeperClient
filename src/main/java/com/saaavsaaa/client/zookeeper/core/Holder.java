@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Holder {
     private static final Logger logger = LoggerFactory.getLogger(Holder.class);
-    private final CountDownLatch CONNECTING = new CountDownLatch(1);
+    private final CountDownLatch connectLatch = new CountDownLatch(1);
     
     protected ZooKeeper zooKeeper;
     protected final BaseContext context;
@@ -35,12 +35,12 @@ public class Holder {
     
     protected void start() throws IOException, InterruptedException {
         initZookeeper();
-        CONNECTING.await();
+        connectLatch.await();
     }
     
     protected void start(final int wait, final TimeUnit units) throws IOException, InterruptedException {
         initZookeeper();
-        CONNECTING.await(wait, units);
+        connectLatch.await(wait, units);
     }
     
     protected void initZookeeper() throws IOException {
@@ -76,7 +76,7 @@ public class Holder {
         logger.debug("BaseClient process event:{}", event.toString());
         if (Watcher.Event.EventType.None == event.getType()) {
             if (Watcher.Event.KeeperState.SyncConnected == event.getState()) {
-                CONNECTING.countDown();
+                connectLatch.countDown();
                 connected.set(true);
                 logger.debug("BaseClient startWatcher SyncConnected");
                 return;
