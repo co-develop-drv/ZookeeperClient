@@ -38,9 +38,9 @@ public class TestHolder extends Holder {
                 } catch (Exception e) {
                     System.out.println("wait " + e.getMessage());
                 }
+                this.setConnected(true);
                 System.out.println("processConnection connected0:" + this.isConnected());
                 CONNECTING.countDown();
-                this.setConnected(true);
                 return;
             }
         }

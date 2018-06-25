@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by aaa
  */
-public class BaseTest {
+public class StartWaitTest {
     @Test
     public void testStart() throws IOException, InterruptedException {
         IClient testClient = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
@@ -31,7 +31,6 @@ public class BaseTest {
         testClient.close();
     }
     
-    @Ignore
     @Test
     public void testNotStart() throws IOException, InterruptedException {
         TestClient c = new TestClient(new ClientContext(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT));
