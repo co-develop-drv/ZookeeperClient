@@ -26,6 +26,7 @@ public class Holder {
     
     protected ZooKeeper zooKeeper;
     protected final BaseContext context;
+    
     private volatile AtomicBoolean connected = new AtomicBoolean();// false
     
     Holder(final BaseContext context){
@@ -117,5 +118,9 @@ public class Holder {
     
     public boolean isConnected() {
         return connected.get();
+    }
+    
+    protected void setConnected(boolean connected) {
+        this.connected.set(connected);
     }
 }

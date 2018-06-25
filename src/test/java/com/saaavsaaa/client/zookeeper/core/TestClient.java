@@ -18,7 +18,7 @@ public class TestClient extends UsualClient {
     public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
         holder = new TestHolder(getContext());
         holder.start(wait, units);
-        return ((TestHolder)holder).isConnected0();
+        return holder.isConnected();
     }
     
     public ZooKeeper getZookeeper() {
