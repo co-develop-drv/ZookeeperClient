@@ -21,11 +21,13 @@ public class ClientFactory extends BaseClientFactory {
     private static final Logger logger = LoggerFactory.getLogger(ClientFactory.class);
     private DelayRetryPolicy delayRetryPolicy;
     
-    public ClientFactory(){}
+    public ClientFactory() {
+        
+    }
     
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
-        if (sessionTimeoutMilliseconds == 0){
+        if (sessionTimeoutMilliseconds == 0) {
             wait = Constants.WAIT;
         }
         this.context = new ClientContext(servers, wait);
@@ -41,7 +43,7 @@ public class ClientFactory extends BaseClientFactory {
     public synchronized BaseClientFactory newClientByOriginal(boolean closeOriginal) {
         IClient oldClient = this.client;
         client = new UsualClient(context);
-        if (closeOriginal){
+        if (closeOriginal) {
             oldClient.close();
         }
         logger.debug("new usual client by a existing client");
@@ -58,27 +60,27 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory watch(final Listener listener){
+    public ClientFactory watch(final Listener listener) {
         globalListener = listener;
         return this;
     }
     
     public ClientFactory setNamespace(String namespace) {
-        if (!namespace.startsWith(Constants.PATH_SEPARATOR)){
+        if (!namespace.startsWith(Constants.PATH_SEPARATOR)) {
             namespace = Constants.PATH_SEPARATOR + namespace;
         }
         this.namespace = namespace;
         return this;
     }
     
-    public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities){
+    public ClientFactory authorization(final String scheme, final byte[] auth, final List<ACL> authorities) {
         this.scheme = scheme;
         this.auth = auth;
         this.authorities = authorities;
         return this;
     }
     
-    public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy){
+    public ClientFactory setRetryPolicy(final DelayRetryPolicy delayRetryPolicy) {
         this.delayRetryPolicy = delayRetryPolicy;
         return this;
     }
