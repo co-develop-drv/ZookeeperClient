@@ -53,7 +53,14 @@ public enum EventCenter {
         this.started = true;
     }
     
+    public void updateListener(final EventType eventType, final EventListener listener) {
+        eventThread.registerListener(eventType, listener);
+    }
+    
     public void registerListener(final EventType eventType, final EventListener listener) {
+        if (eventThread.getListeners().containsKey(eventType)) {
+            return;
+        }
         eventThread.registerListener(eventType, listener);
     }
 }
@@ -119,6 +126,10 @@ class EventThread extends Thread {
                 logger.error(e.getMessage());
             }
         }
+    }
+    
+    public Map<EventType, EventListener> getListeners() {
+        return listeners;
     }
     
     public void registerListener(final EventType eventType, final EventListener listener) {
