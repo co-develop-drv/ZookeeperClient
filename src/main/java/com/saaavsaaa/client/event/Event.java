@@ -1,15 +1,16 @@
 package com.saaavsaaa.client.event;
 
-/**
- * Created by aaa on 18-6-22.
+/*
+ * Created by aaa
  */
 public class Event {
-    private EventType eventType;
-    public Event(final EventType eventType){
+    private Enum eventType;
+    
+    public Event(final Enum eventType) {
         this.eventType = eventType;
     }
     
-    public EventType getEventType() {
+    public Enum getEventType() {
         return eventType;
     }
 }
