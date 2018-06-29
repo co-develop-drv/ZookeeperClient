@@ -2,6 +2,7 @@ package com.saaavsaaa.client.zookeeper.strategy;
 
 import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.KeeperException;
 
 /*
@@ -20,5 +21,10 @@ public abstract class BaseStrategy implements IExecStrategy {
     
     public IProvider getProvider() {
         return provider;
+    }
+    
+    @Override
+    public BaseTransaction transaction() {
+        return provider.transaction();
     }
 }

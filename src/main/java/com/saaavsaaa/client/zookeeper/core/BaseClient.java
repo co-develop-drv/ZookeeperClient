@@ -3,9 +3,11 @@ package com.saaavsaaa.client.zookeeper.core;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IExecStrategy;
 import com.saaavsaaa.client.action.IProvider;
+import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.zookeeper.provider.TransactionProvider;
 import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
@@ -73,7 +75,7 @@ public abstract class BaseClient implements IClient {
             return;
         }
         
-        IProvider provider = new BaseProvider(rootNode, holder, watched, authorities);
+        ITransactionProvider provider = new TransactionProvider(rootNode, holder, watched, authorities);
         switch (strategyType) {
             case USUAL: {
                 strategy = new UsualStrategy(provider);
@@ -81,6 +83,10 @@ public abstract class BaseClient implements IClient {
             }
             case CONTEND: {
                 strategy = new ContentionStrategy(provider);
+                break;
+            }
+            case TRANSACTION_CONTEND: {
+                strategy = new TransactionContendStrategy(provider);
                 break;
             }
             case SYNC_RETRY: {

@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.election.LeaderElection;
+import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -155,4 +156,11 @@ public interface IProvider {
      * reset connection.
      */
     void resetConnection();
+    
+    /**
+     * create transaction.
+     *
+     * @return BaseTransaction
+     */
+    BaseTransaction transaction();
 }

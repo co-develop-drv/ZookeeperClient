@@ -1,10 +1,13 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
 import com.saaavsaaa.client.zookeeper.core.BaseContext;
-import com.saaavsaaa.client.utility.constant.StrategyType;
-import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
-import org.apache.zookeeper.*;
+import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
+import org.apache.zookeeper.AsyncCallback;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +119,9 @@ public class UsualClient extends BaseClient {
         }
     }
     
+    
     @Override
-    public ZKTransaction transaction() {
-        return new ZKTransaction(rootNode, holder);
+    public BaseTransaction transaction() {
+        return strategy.transaction();
     }
 }

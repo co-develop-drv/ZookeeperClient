@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.action;
 
-import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
-import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
+import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -60,9 +60,9 @@ public interface IClient extends IAction, IGroupAction {
     /**
      * create transaction.
      *
-     * @return ZKTransaction
+     * @return BaseTransaction
      */
-    ZKTransaction transaction();
+    BaseTransaction transaction();
     /*
     void createNamespace();
     void deleteNamespace();
