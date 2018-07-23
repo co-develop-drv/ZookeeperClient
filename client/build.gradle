@@ -1,0 +1,17 @@
+group 'com.saaavsaaa'
+version project.version
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: ZVersion
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+//    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+
+    // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
+    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: ZVersion
+
+//    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+
+    compile project(":util")
+}

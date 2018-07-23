@@ -17,33 +17,48 @@
 
 group 'com.saaavsaaa'
 //version '1.0-SNAPSHOT'
-version '2.1-RELEASE'
+version '2.2-Release'
 
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-repositories {
-    mavenCentral()
-}
+// 配置所有子项目共有配置
+subprojects {
+    apply plugin: 'java'
 
-dependencies {
-    // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
-//    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.0'
-//    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.12'
-    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
+    compileJava{
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        [compileJava]*.options*.encoding = 'UTF-8'
+    }
 
-    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-//    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+    compileTestJava{
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        [compileTestJava]*.options*.encoding = 'UTF-8'
+    }
 
+    // 仓库配置
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'http://192.168.2.51:8081/nexus/content/repositories/thirdparty/'
+        }
+        maven {
+            url 'http://192.168.2.51:8081/nexus/content/groups/public/'
+        }
+    }
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
-//    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.12'
-    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
-//    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.0'
-//    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+    //    配置依赖包版本
+    ext{
+        ZVersion = '3.5.3-beta' // 3.3.0, 3.4.12
+    }
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
 }
 
 uploadArchives {
