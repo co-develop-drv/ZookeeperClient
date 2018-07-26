@@ -3,7 +3,7 @@ package com.saaavsaaa.client.zookeeper;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.AsyncRetryCenter;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import org.apache.zookeeper.ZooDefs;
 import org.junit.Before;
@@ -23,7 +23,7 @@ public class AsyncRetryStrategyTest extends UsualClientTest{
     
     @Override
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
-        Listener listener = TestSupport.buildListener();
+        ZookeeperEventListener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
         client.useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;

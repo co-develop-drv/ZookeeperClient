@@ -1,4 +1,4 @@
-group 'com.saaavsaaa'
+group 'com.saaavsaaa.client'
 version project.version
 
 dependencies {
@@ -13,5 +13,5 @@ dependencies {
 
 //    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
 
-    compile project(":util")
+//    compile project(":util")
 }

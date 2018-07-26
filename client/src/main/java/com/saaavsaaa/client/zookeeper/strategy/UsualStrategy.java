@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import org.apache.zookeeper.AsyncCallback;
@@ -68,7 +68,7 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1){
             this.createCurrentOnly(key, value, createMode);
             return;
         }
@@ -79,7 +79,7 @@ public class UsualStrategy extends BaseStrategy {
                 if (i == nodes.size() - 1){
                     this.createCurrentOnly(nodes.get(i), value, createMode);
                 } else {
-                    this.createCurrentOnly(nodes.get(i), Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
+                    this.createCurrentOnly(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
                 }
                 logger.debug("node not exist and create:", nodes.get(i));
             } catch (KeeperException.NodeExistsException ee){
@@ -126,13 +126,13 @@ public class UsualStrategy extends BaseStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         logger.debug("deleteCurrentBranch:{}", key);
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1){
             this.deleteOnlyCurrent(key);
             return;
         }
         String path = provider.getRealPath(key);
         this.deleteChildren(path, true);
-        String superPath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
+        String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
             this.deleteRecursively(superPath);
         } catch (KeeperException.NotEmptyException ee){
@@ -145,7 +145,7 @@ public class UsualStrategy extends BaseStrategy {
     
     private void deleteRecursively(final String path) throws KeeperException, InterruptedException {
         logger.debug("deleteRecursively:{}", path);
-        int index = path.lastIndexOf(Constants.PATH_SEPARATOR);
+        int index = path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR);
         if (index == 0){
             this.deleteOnlyCurrent(path);
             return;

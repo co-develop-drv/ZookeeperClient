@@ -1,11 +1,11 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.core.BaseClientFactory;
 import com.saaavsaaa.client.zookeeper.section.ClientContext;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class ClientFactory extends BaseClientFactory {
     public ClientFactory newClient(final String servers, final int sessionTimeoutMilliseconds) {
         int wait = sessionTimeoutMilliseconds;
         if (sessionTimeoutMilliseconds == 0) {
-            wait = Constants.WAIT;
+            wait = ZookeeperConstants.WAIT;
         }
         this.context = new ClientContext(servers, wait);
         client = new UsualClient(context);
@@ -60,14 +60,14 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory watch(final Listener listener) {
+    public ClientFactory watch(final ZookeeperEventListener listener) {
         globalListener = listener;
         return this;
     }
     
     public ClientFactory setNamespace(String namespace) {
-        if (!namespace.startsWith(Constants.PATH_SEPARATOR)) {
-            namespace = Constants.PATH_SEPARATOR + namespace;
+        if (!namespace.startsWith(ZookeeperConstants.PATH_SEPARATOR)) {
+            namespace = ZookeeperConstants.PATH_SEPARATOR + namespace;
         }
         this.namespace = namespace;
         return this;

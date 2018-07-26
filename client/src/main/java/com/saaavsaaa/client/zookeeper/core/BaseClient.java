@@ -1,8 +1,10 @@
 package com.saaavsaaa.client.zookeeper.core;
 
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.zookeeper.strategy.AllAsyncRetryStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.AsyncRetryStrategy;
 import com.saaavsaaa.client.zookeeper.strategy.ContentionStrategy;
@@ -14,12 +16,10 @@ import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.zookeeper.provider.TransactionProvider;
-import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public abstract class BaseClient implements IClient {
         strategies.put(strategyType, strategy);
     }
     
-    void registerWatch(final Listener globalListener) {
+    void registerWatch(final ZookeeperEventListener globalListener) {
         if (context.globalListener != null) {
             logger.warn("global listener can only register one");
             return;
@@ -124,11 +124,23 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void registerWatch(final String key, final Listener listener) {
+    public void registerWatch(final String key, final ZookeeperEventListener listener) {
         String path = PathUtil.getRealPath(rootNode, key);
         listener.setPath(path);
         context.getWatchers().put(listener.getKey(), listener);
+        checkWatcher(path);
         logger.debug("register watcher:{}", path);
+    }
+    
+    private void checkWatcher(final String path) {
+        if (holder.isConnected()) {
+            try {
+                this.checkExists(path);
+            } catch (final KeeperException | InterruptedException ex) {
+                // ignore
+                logger.warn("check watcher:{}", ex.getMessage());
+            }
+        }
     }
     
     @Override
@@ -144,7 +156,7 @@ public abstract class BaseClient implements IClient {
     }
     
     protected void createNamespace() throws KeeperException, InterruptedException {
-        createNamespace(Constants.NOTHING_DATA);
+        createNamespace(ZookeeperConstants.NOTHING_DATA);
     }
     
    private void createNamespace(final byte[] date) throws KeeperException, InterruptedException {
@@ -163,9 +175,9 @@ public abstract class BaseClient implements IClient {
             rootExist = true;
             return;
         }
-        holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
+        holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperEventListener(rootNode) {
             @Override
-            public void process(final WatchedEvent event) {
+            public void process(final WatchedDataEvent event) {
                 rootExist = false;
             }
         }));
@@ -173,7 +185,7 @@ public abstract class BaseClient implements IClient {
     }
     
     protected void deleteNamespace() throws KeeperException, InterruptedException {
-        holder.zooKeeper.delete(rootNode, Constants.VERSION);
+        holder.zooKeeper.delete(rootNode, ZookeeperConstants.VERSION);
         rootExist = false;
         logger.debug("delete root:{},rootExist:{}", rootNode, rootExist);
     }

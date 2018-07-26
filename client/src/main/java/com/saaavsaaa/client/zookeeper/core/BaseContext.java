@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper.core;
 
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,8 +13,8 @@ public abstract class BaseContext {
     protected int sessionTimeOut;
     protected String scheme;
     protected byte[] auth;
-    protected Listener globalListener;
-    protected final Map<String, Listener> watchers = new ConcurrentHashMap<>();
+    protected ZookeeperEventListener globalListener;
+    protected final Map<String, ZookeeperEventListener> watchers = new ConcurrentHashMap<>();
     
     /**
      * close.
@@ -39,7 +39,7 @@ public abstract class BaseContext {
         return auth;
     }
     
-    public Map<String, Listener> getWatchers(){
+    public Map<String, ZookeeperEventListener> getWatchers(){
         return watchers;
     }
 }

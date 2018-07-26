@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.cache;
 
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ public class PathNode {
     private byte[] value;
     
     PathNode(final String key) {
-        this(key, Constants.RELEASE_VALUE);
+        this(key, ZookeeperConstants.RELEASE_VALUE);
     }
     
     PathNode(final String key, final byte[] value) {
@@ -66,7 +66,7 @@ public class PathNode {
         if (iterator.hasNext()) {
             node.set(iterator, value);
         } else {
-            node.setValue(value.getBytes(Constants.UTF_8));
+            node.setValue(value.getBytes(ZookeeperConstants.UTF_8));
         }
         return node;
     }
@@ -102,7 +102,7 @@ public class PathNode {
         if (children.containsKey(path)) {
             return children.get(path);
         }
-        int nextSeparate = path.indexOf(Constants.PATH_SEPARATOR, index);
+        int nextSeparate = path.indexOf(ZookeeperConstants.PATH_SEPARATOR, index);
         logger.debug("get nextSeparate:{}", nextSeparate);
         if (nextSeparate == -1) {
             nextSeparate = path.length() - 1;

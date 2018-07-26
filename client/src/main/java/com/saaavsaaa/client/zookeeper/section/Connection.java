@@ -76,10 +76,10 @@ public class Connection {
         logger.debug("......................................................connection reset");
     }
     
-    private void block() throws InterruptedException {
+    /*private void block() throws InterruptedException {
         logger.debug("block auto reconnection");
         final CountDownLatch autoReconnect = new CountDownLatch(1);
-        Listener listener = new Listener() {
+        ZookeeperEventListener listener = new ZookeeperEventListener() {
             @Override
             public void process(WatchedEvent event) {
                 autoReconnect.countDown();
@@ -88,5 +88,5 @@ public class Connection {
         };
         context.getWatchers().put(listener.getKey(), listener);
         autoReconnect.await();
-    }
+    }*/
 }

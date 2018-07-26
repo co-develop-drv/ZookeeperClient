@@ -1,19 +1,19 @@
 package com.saaavsaaa.client.zookeeper.core;
 
-import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.StringUtil;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
+import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
  * zookeeper connection holder
@@ -55,16 +55,25 @@ public class Holder {
     private Watcher startWatcher() {
         return new Watcher() {
             public void process(final WatchedEvent event) {
+                System.out.println("-----------------" + event.toString());
                 processConnection(event);
+                
+                if (!isConnected() || Event.EventType.None == event.getType()) {
+                    return;
+                }
+                WatchedDataEvent dataEvent = new WatchedDataEvent(event, zooKeeper);
+                System.out.println("data : " + dataEvent.toString());
                 if (context.globalListener != null) {
-                    context.globalListener.process(event);
-                    logger.debug("BaseClient " + Constants.GLOBAL_LISTENER_KEY + " process");
+                    context.globalListener.process(dataEvent);
+                    logger.debug("BaseClient " + ZookeeperConstants.GLOBAL_LISTENER_KEY + " process");
                 }
                 if (Properties.INSTANCE.watchOn()) {
-                    for (Listener listener : context.getWatchers().values()) {
-                        if (listener.getPath() == null || listener.getPath().equals(event.getPath())) {
-                            logger.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
-                            listener.process(event);
+                    if (!context.getWatchers().isEmpty()) {
+                        for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
+                            if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                                logger.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                                zookeeperEventListener.process(dataEvent);
+                            }
                         }
                     }
                 }

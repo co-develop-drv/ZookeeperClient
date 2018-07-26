@@ -6,7 +6,7 @@ import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.CreateMode;
@@ -34,7 +34,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
     
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-        Listener listener = TestSupport.buildListener();
+        ZookeeperEventListener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
         client.useExecStrategy(StrategyType.SYNC_RETRY);
         return client;
@@ -176,7 +176,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         assert result.get(1).equals("b");
         
         testClient.useExecStrategy(StrategyType.USUAL);
-        testClient.deleteCurrentBranch(key);
+        testClient.deleteAllChildren(PathUtil.checkPath(TestSupport.ROOT));
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     }
     

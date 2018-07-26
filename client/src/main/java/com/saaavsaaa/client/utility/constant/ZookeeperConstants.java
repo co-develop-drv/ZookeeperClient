@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 /*
  * Created by aaa
  */
-public final class Constants {
+public final class ZookeeperConstants {
     public static final int VERSION = -1;
     public static final int WAIT = 60 * 1000;
     public static final byte[] NOTHING_DATA = new byte[0];

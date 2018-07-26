@@ -3,9 +3,9 @@ package com.saaavsaaa.client.retry;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.core.BaseProvider;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
@@ -36,7 +36,7 @@ public class AsyncRetryCenterTest {
     
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-        Listener listener = TestSupport.buildListener();
+        ZookeeperEventListener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
         client.useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;
@@ -59,7 +59,7 @@ public class AsyncRetryCenterTest {
         String value = "bbb11";
         if (!provider.exists("/" + TestSupport.ROOT)) {
             System.out.println("exist root");
-            provider.create("/" + TestSupport.ROOT, Constants.NOTHING_VALUE, CreateMode.PERSISTENT);
+            provider.create("/" + TestSupport.ROOT, ZookeeperConstants.NOTHING_VALUE, CreateMode.PERSISTENT);
         }
         AsyncRetryCenter.INSTANCE.add(new TestCreateCurrentOperation(provider, key, value, CreateMode.PERSISTENT));
         Thread.sleep(2000);

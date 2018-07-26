@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.action;
 
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 import com.saaavsaaa.client.utility.constant.StrategyType;
-import com.saaavsaaa.client.zookeeper.section.Listener;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,7 @@ public interface IClient extends IAction, IGroupAction {
      * @param key key
      * @param listener listener
      */
-    void registerWatch(String key, Listener listener);
+    void registerWatch(String key, ZookeeperEventListener listener);
     
     /**
      * unregister watcher.
@@ -67,7 +67,7 @@ public interface IClient extends IAction, IGroupAction {
     void createNamespace();
     void deleteNamespace();
     
-    Watcher registerWatch(Listener listener);
+    Watcher registerWatch(ZookeeperEventListener listener);
     void setRootNode(String namespace);
     
     void setAuthorities(String scheme, byte[] auth);

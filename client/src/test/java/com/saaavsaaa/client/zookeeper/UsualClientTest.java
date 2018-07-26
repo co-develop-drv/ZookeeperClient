@@ -45,7 +45,7 @@ public class UsualClientTest extends BaseClientTest {
     
     @Test
     public void asynGet() throws KeeperException, InterruptedException {
-        super.asynGet(testClient);
+        super.asyncGet(testClient);
     }
     
     @Test
@@ -71,6 +71,11 @@ public class UsualClientTest extends BaseClientTest {
     @Test
     public void watch() throws KeeperException, InterruptedException {
         super.watch(testClient);
+    }
+    
+    @Test
+    public void assertWatchRegister() throws KeeperException, InterruptedException {
+        super.watchRegister(testClient);
     }
     
     @Test

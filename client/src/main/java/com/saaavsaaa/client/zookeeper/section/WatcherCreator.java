@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
  */
 public class WatcherCreator {
     private static final Logger logger = LoggerFactory.getLogger(WatcherCreator.class);
-    public static Watcher deleteWatcher(Listener listener){
+    public static Watcher deleteWatcher(ZookeeperEventListener listener){
         return new Watcher() {
             @Override
             public void process(WatchedEvent event) {
                 if (listener.getPath().equals(event.getPath()) && Watcher.Event.EventType.NodeDeleted.equals(event.getType())){
-                    listener.process(event);
+                    listener.process(new WatchedDataEvent(event));
                     logger.debug("delete node event:{}", event.toString());
                 }
             }

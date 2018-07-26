@@ -3,7 +3,7 @@ package com.saaavsaaa.client.zookeeper.core;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -65,7 +65,7 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
+        holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
         logger.debug("BaseProvider createCurrentOnly:{}", key);
 //        create(key, value, createMode, new AtomicInteger());
     }
@@ -73,7 +73,7 @@ public class BaseProvider implements IProvider {
     @Deprecated
     private void create(final String key, final String value, final CreateMode createMode, final AtomicInteger count) throws KeeperException, InterruptedException {
         try {
-            holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
+            holder.getZooKeeper().create(key, value.getBytes(ZookeeperConstants.UTF_8), authorities, createMode);
             logger.debug("BaseProvider createCurrentOnly:{}", key);
         } catch (KeeperException.NoNodeException e) {
             logger.error("BaseProvider createCurrentOnly:{}", e.getMessage(), e);
@@ -90,18 +90,18 @@ public class BaseProvider implements IProvider {
 
     @Override
     public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
+        holder.getZooKeeper().setData(key, value.getBytes(ZookeeperConstants.UTF_8), ZookeeperConstants.VERSION);
     }
     
     @Override
     public void delete(final String key) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().delete(key, Constants.VERSION);
+        holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION);
         logger.debug("BaseProvider deleteOnlyCurrent:{}", key);
     }
     
     @Override
     public void delete(final String key, final AsyncCallback.VoidCallback callback, final Object ctx) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().delete(key, Constants.VERSION, callback, ctx);
+        holder.getZooKeeper().delete(key, ZookeeperConstants.VERSION, callback, ctx);
         logger.debug("BaseProvider deleteOnlyCurrent:{},ctx:{}", key, ctx);
     }
     

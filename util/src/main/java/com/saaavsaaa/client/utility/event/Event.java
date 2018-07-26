@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.util.event;
+package com.saaavsaaa.client.utility.event;
 
 /*
  * Created by aaa

@@ -11,7 +11,7 @@ public enum Properties {
     private final ResourceBundle bundle;
     
     private Properties(){
-        bundle = ResourceBundle.getBundle("com/saaavsaaa/client");
+        bundle = ResourceBundle.getBundle("client");
     }
     
     public String getClientId() {

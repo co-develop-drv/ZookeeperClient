@@ -1,4 +1,4 @@
-package com.saaavsaaa.client.zookeeper.section;
+package com.saaavsaaa.client.election;
 
 /**
  * Created by aaa

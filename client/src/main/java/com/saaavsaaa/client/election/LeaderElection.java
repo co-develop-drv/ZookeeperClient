@@ -1,14 +1,14 @@
 package com.saaavsaaa.client.election;
 
 import com.saaavsaaa.client.utility.Properties;
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
+import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.utility.PathUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public abstract class LeaderElection {
         retryCount = Properties.INSTANCE.getNodeElectionCount();
     }
 
-    private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
+    private boolean contend(final String node, final IProvider provider, final ZookeeperEventListener listener) throws KeeperException, InterruptedException {
         boolean success = false;
         try {
             provider.create(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL); // todo EPHEMERAL_SEQUENTIAL check index value
@@ -49,10 +49,10 @@ public abstract class LeaderElection {
     public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
-        final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
+        final String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
+        canBegin = this.contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
             @Override
-            public void process(final WatchedEvent event) {
+            public void process(final WatchedDataEvent event) {
                 try {
                     retryCount--;
                     if (retryCount < 0) {
@@ -61,7 +61,7 @@ public abstract class LeaderElection {
                     }
                     executeContention(realNode, provider);
                 } catch (Exception ee) {
-                    logger.error("Listener Exception executeContention:{}", ee.getMessage(), ee);
+                    logger.error("ZookeeperEventListener Exception executeContention:{}", ee.getMessage(), ee);
                 }
             }
         });

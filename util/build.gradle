@@ -1,4 +1,4 @@
-group 'com.saaavsaaa'
+group 'com.saaavsaaa.util'
 version project.version
 
 dependencies {

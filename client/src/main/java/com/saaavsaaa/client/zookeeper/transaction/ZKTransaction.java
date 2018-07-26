@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper.transaction;
 
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.core.Holder;
 import com.saaavsaaa.client.utility.PathUtil;
 import org.apache.zookeeper.*;
@@ -42,7 +42,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction delete(final String path){
-        return delete(path, Constants.VERSION);
+        return delete(path, ZookeeperConstants.VERSION);
     }
     
     @Override
@@ -54,7 +54,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction check(final String path){
-        return check(path, Constants.VERSION);
+        return check(path, ZookeeperConstants.VERSION);
     }
     
     @Override
@@ -66,7 +66,7 @@ public class ZKTransaction extends BaseTransaction {
     
     @Override
     public ZKTransaction setData(final String path, final byte[] data) {
-        return setData(path, data, Constants.VERSION);
+        return setData(path, data, ZookeeperConstants.VERSION);
     }
     
     @Override

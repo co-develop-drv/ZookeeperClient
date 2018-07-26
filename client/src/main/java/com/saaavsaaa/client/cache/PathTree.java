@@ -4,9 +4,10 @@ import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.Properties;
-import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,8 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.common.PathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +64,7 @@ public final class PathTree {
         
                 PathNode newRoot = new PathNode(rootNode.get().getKey());
                 List<String> children = provider.getChildren(rootNode.get().getKey());
-                children.remove(PathUtil.getRealPath(rootNode.get().getKey(), Constants.CHANGING_KEY));
+                children.remove(PathUtil.getRealPath(rootNode.get().getKey(), ZookeeperConstants.CHANGING_KEY));
                 this.attechIntoNode(children, newRoot);
                 rootNode.set(newRoot);
         
@@ -163,16 +162,16 @@ public final class PathTree {
      * watch data change.
      */
     public void watch() {
-        watch(new Listener(rootNode.get().getKey()) {
+        watch(new ZookeeperEventListener(rootNode.get().getKey()) {
             @Override
-            public void process(final WatchedEvent event) {
+            public void process(final WatchedDataEvent event) {
                 String path = event.getPath();
                 logger.debug("PathTree Watch event:{}", event.toString());
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
                     case NodeChildrenChanged: {
-                        processNodeChange(event.getPath());
+                        processNodeChange(event.getPath(), event.getData());
                         break;
                     }
                     case NodeDeleted: {
@@ -186,11 +185,12 @@ public final class PathTree {
         });
     }
     
-    private void processNodeChange(final String path) {
+    private void processNodeChange(final String path, final String value) {
         try {
-            String value = Constants.NOTHING_VALUE;
-            if (!path.equals(getRootNode().getKey())) {
-                value = provider.getDataString(path);
+            if (value == null) {
+                if (!path.equals(getRootNode().getKey())) {
+                    put(path, provider.getDataString(path));
+                }
             }
             put(path, value);
             // CHECKSTYLE:OFF
@@ -205,7 +205,7 @@ public final class PathTree {
      *
      * @param listener listener
      */
-    public void watch(final Listener listener) {
+    public void watch(final ZookeeperEventListener listener) {
         if (closed) {
             return;
         }
@@ -319,7 +319,7 @@ public final class PathTree {
             logger.debug("put Status:{}", status);
             if (status == PathStatus.RELEASE) {
                 if (path.equals(rootNode.get().getKey())) {
-                    rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(Constants.UTF_8)));
+                    rootNode.set(new PathNode(rootNode.get().getKey(), value.getBytes(ZookeeperConstants.UTF_8)));
                     return;
                 }
                 this.setStatus(PathStatus.CHANGING);
@@ -353,7 +353,7 @@ public final class PathTree {
         }
         try {
             PathUtils.validatePath(path);
-//            String prxpath = path.substring(0, path.lastIndexOf(Constants.PATH_SEPARATOR));
+//            String prxpath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
             PathNode node = get(path);
             node.getChildren().remove(path);
             logger.debug("PathTree end delete:{}", path);

@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseClientFactory {
     protected BaseClient client;
-    protected Listener globalListener;
+    protected ZookeeperEventListener globalListener;
     protected String namespace;
     protected String scheme;
     protected byte[] auth;

@@ -3,8 +3,8 @@ package com.saaavsaaa.client.zookeeper.strategy;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.section.Callback;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
+import com.saaavsaaa.client.election.Callback;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -146,7 +146,7 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1){
             provider.create(key, value, createMode);
             return;
         }
@@ -160,7 +160,7 @@ public class ContentionStrategy extends UsualStrategy {
             if (i == nodes.size() - 1){
                 provider.create(nodes.get(i), value, createMode);
             } else {
-                provider.create(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                provider.create(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode);
             }
         }
     }

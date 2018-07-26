@@ -1,8 +1,8 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.zookeeper.core.BaseClientTest;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -48,7 +48,7 @@ public class ClientsTest extends BaseClientTest {
     }
     
     protected IClient newWatchClient(ClientFactory creator) throws IOException, InterruptedException {
-        Listener listener = TestSupport.buildListener();
+        ZookeeperEventListener listener = TestSupport.buildListener();
         return creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
     }
     
@@ -98,7 +98,7 @@ public class ClientsTest extends BaseClientTest {
     @Test
     public void asynGet() throws KeeperException, InterruptedException {
         for (IClient client : clients) {
-            super.asynGet(client);
+            super.asyncGet(client);
         }
     }
     
@@ -151,7 +151,7 @@ public class ClientsTest extends BaseClientTest {
         for (IClient client : clients) {
             createRootOnly(client);
             deleteRoot(client);
-            assert getZooKeeper(client).exists(Constants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
+            assert getZooKeeper(client).exists(ZookeeperConstants.PATH_SEPARATOR + TestSupport.ROOT, false) == null;
         }
     }
 }

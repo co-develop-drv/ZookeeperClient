@@ -1,11 +1,11 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
+import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.core.BaseProvider;
 import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.section.Callback;
+import com.saaavsaaa.client.election.Callback;
 import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -54,7 +54,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
     }
 
     private void createBegin(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1){
             ((ITransactionProvider)provider).createInTransaction(key, value, createMode, transaction);
             return;
         }
@@ -68,7 +68,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             if (i == nodes.size() - 1){
                 ((ITransactionProvider)provider).createInTransaction(nodes.get(i), value, createMode, transaction);
             } else {
-                ((ITransactionProvider)provider).createInTransaction(nodes.get(i), Constants.NOTHING_VALUE, createMode, transaction);
+                ((ITransactionProvider)provider).createInTransaction(nodes.get(i), ZookeeperConstants.NOTHING_VALUE, createMode, transaction);
             }
         }
     }
@@ -98,7 +98,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
             deleteChildren(child, true, transaction);
         }
         if (deleteCurrentNode){
-            transaction.delete(key, Constants.VERSION);
+            transaction.delete(key, ZookeeperConstants.VERSION);
         }
     }
 
@@ -131,7 +131,7 @@ public class TransactionContendStrategy extends ContentionStrategy {
                 }
             }
             if (provider.exists(node) && canDelete){
-                transaction.delete(node, Constants.VERSION);
+                transaction.delete(node, ZookeeperConstants.VERSION);
             }
             prePath = node;
         }
