@@ -291,15 +291,11 @@ public abstract class BaseClientTest extends BaseTest{
                 switch (event.getType()) {
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        String result;
                         try {
-                            result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
-                            System.out.println(result);
+                            actual.add("update_" + event.getPath() + "_" + client.getDataString(event.getPath()));
                         } catch (final KeeperException | InterruptedException e) {
-                            logger.warn(e.getMessage());
-                            return;
+                            logger.debug(e.getMessage());
                         }
-                        actual.add("update_" + event.getPath() + "_" + result);
                         break;
                     case NodeDeleted:
                         actual.add("delete_" + event.getPath() + "_");
