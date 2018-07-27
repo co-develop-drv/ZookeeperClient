@@ -2,6 +2,8 @@ package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +16,7 @@ public abstract class BaseContext {
     protected String scheme;
     protected byte[] auth;
     protected ZookeeperEventListener globalListener;
+    private final List<String> waitCheckPaths = new ArrayList<>();
     protected final Map<String, ZookeeperEventListener> watchers = new ConcurrentHashMap<>();
     
     /**
@@ -41,5 +44,9 @@ public abstract class BaseContext {
     
     public Map<String, ZookeeperEventListener> getWatchers(){
         return watchers;
+    }
+    
+    public List<String> getWaitCheckPaths() {
+        return waitCheckPaths;
     }
 }

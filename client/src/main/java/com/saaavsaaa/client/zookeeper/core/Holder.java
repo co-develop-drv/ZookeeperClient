@@ -1,14 +1,13 @@
 package com.saaavsaaa.client.zookeeper.core;
 
-import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
-import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -55,28 +54,17 @@ public class Holder {
     private Watcher startWatcher() {
         return new Watcher() {
             public void process(final WatchedEvent event) {
-                System.out.println("-----------------" + event.toString());
+                logger.debug("event-----------:" + event.toString());
                 processConnection(event);
-                
-                if (!isConnected() || Event.EventType.None == event.getType()) {
+                if (!isConnected()) {
                     return;
                 }
-                WatchedDataEvent dataEvent = new WatchedDataEvent(event, zooKeeper);
-                System.out.println("data : " + dataEvent.toString());
-                if (context.globalListener != null) {
-                    context.globalListener.process(dataEvent);
-                    logger.debug("BaseClient " + ZookeeperConstants.GLOBAL_LISTENER_KEY + " process");
+                processGlobalListener(event);
+                // todo filter event type or path
+                if (event.getType() == Event.EventType.None) {
+                    return;
                 }
-                if (Properties.INSTANCE.watchOn()) {
-                    if (!context.getWatchers().isEmpty()) {
-                        for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
-                            if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
-                                logger.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
-                                zookeeperEventListener.process(dataEvent);
-                            }
-                        }
-                    }
-                }
+                processUsualListener(event);
             }
         };
     }
@@ -100,6 +88,35 @@ public class Holder {
                     logger.error("event state Expired:{}", e.getMessage(), e);
                 }
             }
+        }
+    }
+    
+    private void processGlobalListener(final WatchedEvent event) {
+        if (context.globalListener != null) {
+            context.globalListener.process(event);
+            logger.debug("Holder {} process", ZookeeperConstants.GLOBAL_LISTENER_KEY);
+        }
+    }
+    
+    private void processUsualListener(final WatchedEvent event) {
+        checkPath(event.getPath());
+        if (!context.getWatchers().isEmpty()) {
+            for (ZookeeperEventListener zookeeperEventListener : context.getWatchers().values()) {
+                if (zookeeperEventListener.getPath() == null || event.getPath().startsWith(zookeeperEventListener.getPath())) {
+                    logger.debug("listener process:{}, listener:{}", zookeeperEventListener.getPath(), zookeeperEventListener.getKey());
+                    zookeeperEventListener.process(event);
+                }
+            }
+        }
+    }
+    
+    private void checkPath(final String path) {
+        try {
+            if (zooKeeper.exists(path, true) != null && context.getWaitCheckPaths().contains(path)) {
+                context.getWaitCheckPaths().remove(path);
+            }
+        } catch (final KeeperException | InterruptedException ex) {
+            // ignore
         }
     }
     

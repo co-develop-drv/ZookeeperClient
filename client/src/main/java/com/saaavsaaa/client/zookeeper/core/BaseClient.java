@@ -2,7 +2,6 @@ package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.zookeeper.strategy.AllAsyncRetryStrategy;
@@ -20,6 +19,7 @@ import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.strategy.UsualStrategy;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +140,7 @@ public abstract class BaseClient implements IClient {
                 // ignore
                 logger.warn("check watcher:{}", ex.getMessage());
             }
+            context.getWaitCheckPaths().add(path);
         }
     }
     
@@ -177,7 +178,7 @@ public abstract class BaseClient implements IClient {
         }
         holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperEventListener(rootNode) {
             @Override
-            public void process(final WatchedDataEvent event) {
+            public void process(final WatchedEvent event) {
                 rootExist = false;
             }
         }));

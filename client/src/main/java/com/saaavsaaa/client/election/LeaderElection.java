@@ -2,13 +2,13 @@ package com.saaavsaaa.client.election;
 
 import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
-import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.utility.PathUtil;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public abstract class LeaderElection {
         final String contendNode = PathUtil.getRealPath(realNode, ZookeeperConstants.CHANGING_KEY);
         canBegin = this.contend(contendNode, provider, new ZookeeperEventListener(contendNode) {
             @Override
-            public void process(final WatchedDataEvent event) {
+            public void process(final WatchedEvent event) {
                 try {
                     retryCount--;
                     if (retryCount < 0) {

@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import org.apache.zookeeper.WatchedEvent;
 
@@ -16,7 +15,7 @@ public class TestSupport {
     public static ZookeeperEventListener buildListener(){
         ZookeeperEventListener listener = new ZookeeperEventListener(null) {
             @Override
-            public void process(WatchedDataEvent event) {
+            public void process(WatchedEvent event) {
                 System.out.println("==========================================================");
                 System.out.println(event.toString());
                 System.out.println("==========================================================");

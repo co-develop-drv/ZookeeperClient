@@ -6,7 +6,6 @@ import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
-import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.common.PathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,14 +164,14 @@ public final class PathTree {
     public void watch() {
         watch(new ZookeeperEventListener(rootNode.get().getKey()) {
             @Override
-            public void process(final WatchedDataEvent event) {
+            public void process(final WatchedEvent event) {
                 String path = event.getPath();
                 logger.debug("PathTree Watch event:{}", event.toString());
                 switch (event.getType()) {
                     case NodeCreated:
                     case NodeDataChanged:
                     case NodeChildrenChanged: {
-                        processNodeChange(event.getPath(), event.getData());
+                        processNodeChange(event.getPath());
                         break;
                     }
                     case NodeDeleted: {
@@ -185,12 +185,11 @@ public final class PathTree {
         });
     }
     
-    private void processNodeChange(final String path, final String value) {
+    private void processNodeChange(final String path) {
         try {
-            if (value == null) {
-                if (!path.equals(getRootNode().getKey())) {
-                    put(path, provider.getDataString(path));
-                }
+            String value = ZookeeperConstants.NOTHING_VALUE;
+            if (!path.equals(getRootNode().getKey())) {
+                value = provider.getDataString(path);
             }
             put(path, value);
             // CHECKSTYLE:OFF

@@ -1,5 +1,7 @@
 package com.saaavsaaa.client.zookeeper.section;
 
+import org.apache.zookeeper.WatchedEvent;
+
 /**
  * Created by aaa
  */
@@ -15,7 +17,7 @@ public abstract class ZookeeperEventListener {
         this.key = path + System.currentTimeMillis();
     }
     
-    public abstract void process(final WatchedDataEvent event);
+    public abstract void process(final WatchedEvent event);
     
     public String getPath() {
         return path;

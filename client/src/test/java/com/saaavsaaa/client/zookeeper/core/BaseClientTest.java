@@ -4,7 +4,6 @@ import com.saaavsaaa.client.zookeeper.TestSupport;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
-import com.saaavsaaa.client.zookeeper.section.WatchedDataEvent;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import org.apache.zookeeper.*;
@@ -212,7 +211,7 @@ public abstract class BaseClientTest extends BaseTest{
     
     protected void watch(final IClient client) throws KeeperException, InterruptedException {
         List<String> actual = new ArrayList<>();
-        final ZookeeperEventListener zookeeperEventListener = buildListener(actual);
+        final ZookeeperEventListener zookeeperEventListener = buildListener(client, actual);
         
         String key = "a";
         client.registerWatch(key, zookeeperEventListener);
@@ -221,22 +220,22 @@ public abstract class BaseClientTest extends BaseTest{
             
             @Override
             public void process(final WatchedEvent event) {
-                zookeeperEventListener.process(new WatchedDataEvent(event, getZooKeeper(client)));
+                zookeeperEventListener.process(event);
             }
         });
         String value = "value0";
         client.update(key, value);
-//        assertThat(client.getDataString(key), is(value));
+        assertThat(client.getDataString(key), is(value));
         sleep(200);
         
         String value1 = "value1";
         client.update(key, value1);
-//        assertThat(client.getDataString(key), is(value1));
+        assertThat(client.getDataString(key), is(value1));
         sleep(200);
         
         String value2 = "value2";
         client.update(key, value2);
-//        assertThat(client.getDataString(key), is(value2));
+        assertThat(client.getDataString(key), is(value2));
         sleep(200);
         
         client.deleteCurrentBranch(key);
@@ -251,7 +250,7 @@ public abstract class BaseClientTest extends BaseTest{
     protected void watchRegister(final IClient client) throws KeeperException, InterruptedException {
         List<String> actual = new ArrayList<>();
         
-        final ZookeeperEventListener zookeeperEventListener = buildListener(actual);
+        final ZookeeperEventListener zookeeperEventListener = buildListener(client, actual);
         
         String key = "a";
         client.registerWatch(key, zookeeperEventListener);
@@ -283,16 +282,24 @@ public abstract class BaseClientTest extends BaseTest{
         client.unregisterWatch(zookeeperEventListener.getKey());
     }
     
-    private ZookeeperEventListener buildListener(final List<String> actual) {
+    private ZookeeperEventListener buildListener(final IClient client, final List<String> actual) {
         return new ZookeeperEventListener(null) {
             
             @Override
-            public void process(final WatchedDataEvent event) {
+            public void process(final WatchedEvent event) {
                 logger.info(event.toString());
                 switch (event.getType()) {
                     case NodeDataChanged:
                     case NodeChildrenChanged:
-                        actual.add("update_" + event.getPath() + "_" + event.getData());
+                        String result;
+                        try {
+                            result = new String(getZooKeeper(client).getData(event.getPath(),false, null));
+                            System.out.println(result);
+                        } catch (final KeeperException | InterruptedException e) {
+                            logger.warn(e.getMessage());
+                            return;
+                        }
+                        actual.add("update_" + event.getPath() + "_" + result);
                         break;
                     case NodeDeleted:
                         actual.add("delete_" + event.getPath() + "_");
