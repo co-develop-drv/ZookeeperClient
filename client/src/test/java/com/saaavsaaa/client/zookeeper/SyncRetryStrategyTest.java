@@ -4,6 +4,7 @@ import com.saaavsaaa.client.retry.TestCallable;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
+import com.saaavsaaa.client.retry.TestResultCallable;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
@@ -109,7 +110,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         testClient.createAllNeedPath(key, "", CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     
-        TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
+        TestResultCallable callable = new TestResultCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
                 setResult(provider.exists(provider.getRealPath(key)));
@@ -129,8 +130,8 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
-        
-        TestCallable callable = getData("a");
+    
+        TestResultCallable callable = getData("a");
         assert callable.getResult().equals("");
         callable = getData(key);
         assert callable.getResult().equals("bbb11");
@@ -140,8 +141,8 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     }
     
-    private TestCallable getData(final String key){
-        TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
+    private TestResultCallable getData(final String key){
+        TestResultCallable callable = new TestResultCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
                 setResult(new String(provider.getData(provider.getRealPath(key))));
@@ -160,7 +161,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         testClient.createAllNeedPath("a/c", "", CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     
-        TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
+        TestResultCallable callable = new TestResultCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
                 setResult(provider.getChildren(provider.getRealPath(current)));
