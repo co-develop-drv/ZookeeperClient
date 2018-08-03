@@ -126,12 +126,19 @@ public class UsualStrategy extends BaseStrategy {
     @Override
     public void deleteCurrentBranch(final String key) throws KeeperException, InterruptedException {
         logger.debug("deleteCurrentBranch:{}", key);
-        if (key.indexOf(ZookeeperConstants.PATH_SEPARATOR) < -1){
-            this.deleteOnlyCurrent(key);
-            return;
+        String path = getProvider().getRealPath(key);
+        try {
+            this.deleteOnlyCurrent(path);
+        } catch (final KeeperException | InterruptedException ex) {
+            if (ex instanceof KeeperException.NotEmptyException) {
+                this.deleteChildren(path, true);
+            } else if (ex instanceof KeeperException.NoNodeException) {
+                logger.debug("path:{},ex:{}", path, ex.getMessage());
+            } else {
+                logger.warn("path:{},ex:{}", path, ex.getMessage());
+                throw ex;
+            }
         }
-        String path = provider.getRealPath(key);
-        this.deleteChildren(path, true);
         String superPath = path.substring(0, path.lastIndexOf(ZookeeperConstants.PATH_SEPARATOR));
         try {
             this.deleteRecursively(superPath);
@@ -139,7 +146,7 @@ public class UsualStrategy extends BaseStrategy {
             logger.warn("deleteCurrentBranch exist children:{},e:{}", path, ee.getMessage());
             return;
         } catch (KeeperException.NoNodeException ee){
-            logger.warn("deleteCurrentBranch NoNodeException:{},e:{}", superPath, ee.getMessage());
+            logger.warn("deleteCurrentBranch:{},e:{}", superPath, ee.getMessage());
         }
     }
     
