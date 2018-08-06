@@ -17,6 +17,7 @@ import java.util.List;
  * Created by aaa
  */
 public class ContentionStrategyTest extends UsualClientTest {
+    
     @Override
     protected IClient createClient(final ClientFactory creator) throws IOException, InterruptedException {
         ZookeeperEventListener listener = TestSupport.buildListener();
@@ -27,7 +28,8 @@ public class ContentionStrategyTest extends UsualClientTest {
     
     //todo test node contention case
     
-    @Test
+//    @Test
+    @Override
     public void deleteBranch() throws KeeperException, InterruptedException {
         String keyB = "a/b/bb";
         testClient.createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);

@@ -96,7 +96,7 @@ public interface IProvider {
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
      */
-    void update(String key, String value) throws KeeperException, InterruptedException;
+    boolean update(String key, String value) throws KeeperException, InterruptedException;
     
     /**
      * only delete target node..

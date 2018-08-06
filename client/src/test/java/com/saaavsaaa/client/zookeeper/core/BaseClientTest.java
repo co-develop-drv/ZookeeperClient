@@ -255,22 +255,18 @@ public abstract class BaseClientTest extends BaseTest{
         String key = "a";
         client.registerWatch(key, zookeeperEventListener);
         client.createCurrentOnly(key, "aaa", CreateMode.EPHEMERAL);
-//        assertThat(client.getDataString(key), is("aaa"));
         sleep(200);
         
         String value = "value0";
         client.update(key, value);
-//        assertThat(client.getDataString(key), is(value));
         sleep(200);
         
         String value1 = "value1";
         client.update(key, value1);
-//        assertThat(client.getDataString(key), is(value1));
         sleep(200);
         
         String value2 = "value2";
         client.update(key, value2);
-//        assertThat(client.getDataString(key), is(value2));
         sleep(200);
         
         client.deleteCurrentBranch(key);

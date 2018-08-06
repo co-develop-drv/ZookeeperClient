@@ -1,7 +1,6 @@
 package com.saaavsaaa.client.zookeeper.provider;
 
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
-import com.saaavsaaa.client.zookeeper.core.BaseProvider;
 import com.saaavsaaa.client.zookeeper.core.Holder;
 import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;

@@ -1,5 +1,3 @@
 rootProject.name = 'zookeeper-client'
-
 include 'util'
 include 'client'
-

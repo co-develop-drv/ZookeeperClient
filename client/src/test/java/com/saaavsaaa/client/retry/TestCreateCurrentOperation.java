@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.retry;
 
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.core.BaseProvider;
+import com.saaavsaaa.client.zookeeper.provider.BaseProvider;
 import com.saaavsaaa.client.zookeeper.operation.CreateCurrentOperation;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;

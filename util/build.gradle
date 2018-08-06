@@ -1,6 +1,9 @@
 group 'com.saaavsaaa.util'
 version project.version
 
+apply plugin: 'java'
+apply plugin: 'maven'
+
 dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
@@ -20,8 +23,4 @@ artifacts {
     archives jar
     archives javadocJar
     archives sourcesJar
-}
-
-signing {
-    sign configurations.archives
 }

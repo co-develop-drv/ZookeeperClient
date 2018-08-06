@@ -1,21 +1,23 @@
 group 'com.saaavsaaa.client'
 version project.version
 
+apply plugin: 'java'
+apply plugin: 'maven'
+
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
-    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: ZVersion
+    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 //    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
 
+    compile project(":util")
+
     // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
-    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: ZVersion
+    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
 
-//    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
-
-//    compile project(":util")
+//    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1
 }
-
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
@@ -31,8 +33,4 @@ artifacts {
     archives jar
     archives javadocJar
     archives sourcesJar
-}
-
-signing {
-    sign configurations.archives
 }

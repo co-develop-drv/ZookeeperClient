@@ -1,6 +1,5 @@
 package com.saaavsaaa.client.zookeeper.provider;
 
-import com.saaavsaaa.client.zookeeper.core.BaseProvider;
 import com.saaavsaaa.client.zookeeper.core.Holder;
 import com.saaavsaaa.client.retry.RetryCount;
 import org.apache.zookeeper.KeeperException;

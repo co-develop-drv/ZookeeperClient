@@ -1,6 +1,7 @@
 package com.saaavsaaa.client.zookeeper;
 
 import com.saaavsaaa.client.action.IClient;
+import com.saaavsaaa.client.utility.ConcurrentRun;
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
 import com.saaavsaaa.client.zookeeper.section.ZookeeperEventListener;
 import com.saaavsaaa.client.zookeeper.core.BaseClientTest;
@@ -135,6 +136,28 @@ public class ClientsTest extends BaseClientTest {
         for (IClient client : clients) {
             super.watch(client);
         }
+    }
+    
+    @Test
+    public void assertWatchRegister() throws KeeperException, InterruptedException {
+        for (IClient client : clients) {
+            super.watchRegister(client);
+        }
+    }
+    
+    @Test
+    public void watchRegister() throws KeeperException, InterruptedException {
+        List<Runnable> runnableList = new ArrayList<>();
+        for (IClient client : clients) {
+            runnableList.add(() -> {
+                try {
+                    super.watchRegister(client);
+                } catch (KeeperException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        ConcurrentRun.executeTasks(runnableList);
     }
     
     @Test

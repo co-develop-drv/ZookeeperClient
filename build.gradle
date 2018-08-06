@@ -27,6 +27,7 @@ apply plugin: 'signing'
 // 配置所有子项目共有配置
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven'
 
     compileJava{
         sourceCompatibility = 1.8
@@ -44,12 +45,12 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
+        /*maven {
             url 'http://192.168.2.51:8081/nexus/content/repositories/thirdparty/'
         }
         maven {
             url 'http://192.168.2.51:8081/nexus/content/groups/public/'
-        }
+        }*/
     }
 
     //    配置依赖包版本

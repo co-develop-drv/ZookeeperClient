@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.zookeeper.strategy;
 
 import com.saaavsaaa.client.utility.constant.ZookeeperConstants;
-import com.saaavsaaa.client.zookeeper.core.BaseProvider;
+import com.saaavsaaa.client.zookeeper.provider.BaseProvider;
 import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.utility.PathUtil;
