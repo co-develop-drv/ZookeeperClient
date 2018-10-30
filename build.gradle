@@ -37,13 +37,16 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 //    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
 
-
     testCompile group: 'junit', name: 'junit', version: '4.11'
     // https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper
 //    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.12'
     testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
 //    testCompile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.0'
 //    testCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+
+    // https://mvnrepository.com/artifact/org.apache.curator/curator-test
+    testCompile group: 'org.apache.curator', name: 'curator-test', version: '4.0.1'
+
 }
 
 uploadArchives {
@@ -54,11 +57,11 @@ uploadArchives {
 
             if (isReleaseBuild()){
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+                    authentication(userName: "", password: "")
                 }
             } else {
                 repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+                    authentication(userName: "", password: "")
                 }
             }
 

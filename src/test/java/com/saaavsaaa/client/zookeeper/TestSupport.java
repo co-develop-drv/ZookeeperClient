@@ -8,7 +8,7 @@ import org.apache.zookeeper.WatchedEvent;
  */
 public class TestSupport {
     public static final String AUTH = "digest";
-    public static final String SERVERS = "192.168.2.44:2181";
+    public static final String SERVERS = "127.0.0.1:3333";
     public static final int SESSION_TIMEOUT = 200000;//ms
     public static final String ROOT = "test";
     

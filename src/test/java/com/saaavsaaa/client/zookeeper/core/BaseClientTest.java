@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.zookeeper.core;
 
+import com.saaavsaaa.client.TestServer;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
@@ -28,6 +29,7 @@ public abstract class BaseClientTest {
     
     @Before
     public void start() throws IOException, InterruptedException {
+        TestServer.start();
         ClientFactory creator = new ClientFactory();
         testClient = createClient(creator);
         getZooKeeper(testClient);

@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.retry;
 
+import com.saaavsaaa.client.TestServer;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.zookeeper.core.BaseProvider;
@@ -28,6 +29,7 @@ public class AsyncRetryCenterTest {
     
     @Before
     public void start() throws IOException, InterruptedException {
+        TestServer.start();
         client = createClient();
         provider = ((BaseClient)client).getStrategy().getProvider();
         AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
