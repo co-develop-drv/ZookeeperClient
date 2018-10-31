@@ -11,6 +11,9 @@ import java.util.List;
  * Created by aaa
  */
 interface IAction {
+
+    // TODO: check children exists
+
     /**
      * get string type data.
      *

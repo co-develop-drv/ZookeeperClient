@@ -9,7 +9,7 @@ import java.util.*;
  * Created by aaa
  */
 public class PathUtil {
-    
+
     /**
      * get real path.
      *
@@ -20,7 +20,7 @@ public class PathUtil {
     public static String getRealPath(final String root, final String path){
         return adjustPath(root, path);
     }
-    
+
     private static String adjustPath(final String root, final String path) {
         if (StringUtil.isNullOrBlank(path)) {
             throw new IllegalArgumentException("path should have content!");
@@ -29,18 +29,18 @@ public class PathUtil {
         if (!root.startsWith(Constants.PATH_SEPARATOR)) {
             rootPath = Constants.PATH_SEPARATOR + root;
         }
-        String subPath = path;
+        String realPath = path;
         if (!path.startsWith(Constants.PATH_SEPARATOR)) {
-            subPath = Constants.PATH_SEPARATOR + path;
+            realPath = Constants.PATH_SEPARATOR + path;
         }
-        if (!subPath.startsWith(rootPath)) {
-            return rootPath + subPath;
+        if (!realPath.startsWith(rootPath)) {
+            return rootPath + realPath;
         }
-        return path;
+        return realPath;
     }
-    
+
     /**
-     * get path nodes, child to root.
+     * Get path nodes, child to root.
      *
      * @param root root
      * @param path path
@@ -60,9 +60,9 @@ public class PathUtil {
         pathStack.push(realPath);
         return pathStack;
     }
-    
+
     /**
-     * get path nodes.
+     * Get path nodes.
      *
      * @param root root
      * @param path path
@@ -73,7 +73,7 @@ public class PathUtil {
         List<String> paths = new ArrayList<>();
         int index = 1;
         int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
-        
+
         do {
             paths.add(realPath.substring(0, position));
             index = position + 1;
@@ -83,9 +83,9 @@ public class PathUtil {
         paths.add(realPath);
         return paths;
     }
-    
+
     /**
-     * get path nodes.
+     * Get path nodes.
      *
      * @param path path
      * @return all path nodes
@@ -108,7 +108,77 @@ public class PathUtil {
         }
         return paths;
     }
-    
+
+/*
+    *//**
+     * get path nodes, child to root.
+     *
+     * @param root root
+     * @param path path
+     * @return all path nodes
+     *//*
+    public static Stack<String> getPathReverseNodes(final String root, final String path) {
+        String realPath = adjustPath(root, path);
+        Stack<String> pathStack = new Stack<>();
+        int index = 1;
+        int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        do {
+            pathStack.push(realPath.substring(0, position));
+            index = position + 1;
+            position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        }
+        while (position > -1);
+        pathStack.push(realPath);
+        return pathStack;
+    }
+
+    *//**
+     * get path nodes.
+     *
+     * @param root root
+     * @param path path
+     * @return all path nodes
+     *//*
+    public static List<String> getPathOrderNodes(final String root, final String path) {
+        String realPath = adjustPath(root, path);
+        List<String> paths = new ArrayList<>();
+        int index = 1;
+        int position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+
+        do {
+            paths.add(realPath.substring(0, position));
+            index = position + 1;
+            position = realPath.indexOf(Constants.PATH_SEPARATOR, index);
+        }
+        while (position > -1);
+        paths.add(realPath);
+        return paths;
+    }
+
+    *//**
+     * get path nodes.
+     *
+     * @return all path nodes
+     *//*
+    public static List<String> getShortPathNodes(final String path) {
+        String realPath = checkPath(path);
+        List<String> paths = new ArrayList<>();
+        char[] chars = realPath.toCharArray();
+        StringBuilder builder = new StringBuilder(Constants.PATH_SEPARATOR);
+        for (int i = 1; i < chars.length; i++) {
+            if (chars[i] == Constants.PATH_SEPARATOR.charAt(0)) {
+                paths.add(builder.toString());
+                builder = new StringBuilder(Constants.PATH_SEPARATOR);
+                continue;
+            }
+            builder.append(chars[i]);
+            if (i == chars.length - 1) {
+                paths.add(builder.toString());
+            }
+        }
+        return paths;
+    }
+ */
     public static List<String> breadthToB(TreeNode root) {
         List<String> lists = new ArrayList<>();
         if(root==null)
@@ -125,7 +195,7 @@ public class PathUtil {
         }
         return lists;
     }
-    
+
     public static List<String> depthToB(TreeNode root) {
         List<String> lists = new ArrayList<>();
         if(root == null)
@@ -143,7 +213,7 @@ public class PathUtil {
         }
         return lists;
     }
-    
+
     //isSequential
     /*
     * ignore invalid char and // /./  /../
@@ -155,7 +225,7 @@ public class PathUtil {
         if(path.charAt(0) != 47 || path.charAt(path.length() - 1) == 47) {
             path = Constants.PATH_SEPARATOR + path;
         }
-    
+
         if(path.charAt(path.length() - 1) == 47) {
             path = Constants.PATH_SEPARATOR + path;
         }
@@ -164,7 +234,7 @@ public class PathUtil {
         char[] chars = path.toCharArray();
         StringBuilder builder = new StringBuilder();
         builder.append(previous);
-        
+
         for(int i = 1; i < chars.length; ++i) {
             char c = chars[i];
             if (c == 0 || (c == 47 && previous == 47)) {
@@ -185,7 +255,7 @@ public class PathUtil {
             if (c > 0 && c < 31 || c > 127 && c < 159 || c > '\ud800' && c < '\uf8ff' || c > '\ufff0' && c < '\uffff') {
                 continue;
             }
-    
+
             builder.append(c);
             previous = c;
         }
