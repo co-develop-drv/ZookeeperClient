@@ -179,19 +179,19 @@ public class PathUtil {
         return paths;
     }
  */
-    public static List<String> breadthToB(TreeNode root) {
+    /*public static List<String> breadthToB(TreeNode root) {
         List<String> lists = new ArrayList<>();
         if(root==null)
             return lists;
         Queue<TreeNode> queue=new LinkedList<>();
         queue.offer(root);
         while(!queue.isEmpty()) {
-            /*TreeNode tree=queue.poll();
+            *//*TreeNode tree=queue.poll();
             if(tree.left!=null)
                 queue.offer(tree.left);
             if(tree.right!=null)
                 queue.offer(tree.right);
-            lists.add(tree.val);*/
+            lists.add(tree.val);*//*
         }
         return lists;
     }
@@ -204,19 +204,21 @@ public class PathUtil {
         stack.push(root);
         while(!stack.isEmpty()) {
             TreeNode tree = stack.pop();
-            //先往栈中压入右节点，再压左节点，这样出栈就是先左节点后右节点了。
-            /*if(tree.right!=null)
+            *//*if(tree.right!=null)
                 stack.push(tree.right);
             if(tree.left!=null)
                 stack.push(tree.left);
-            lists.add(tree.val);*/
+            lists.add(tree.val);*//*
         }
         return lists;
-    }
+    }*/
 
     //isSequential
     /*
     * ignore invalid char and // /./  /../
+    *
+    * @param path
+    * @return path
     */
     public static String checkPath(String path) throws IllegalArgumentException {
         if(path == null || path.length() == 0) {

@@ -17,7 +17,8 @@
 
 group 'com.saaavsaaa'
 //version '1.0-SNAPSHOT'
-version '2.1-RELEASE'
+//version '2.1-RELEASE'
+version '2.3'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -57,11 +58,11 @@ uploadArchives {
 
             if (isReleaseBuild()){
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2") {
-                    authentication(userName: "", password: "")
+                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
                 }
             } else {
                 repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: "", password: "")
+                    authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
                 }
             }
 
@@ -119,5 +120,9 @@ artifacts {
 signing {
     sign configurations.archives
 }
+
+
+
+
 
 // https://issues.sonatype.org/browse/OSSRH-39239
