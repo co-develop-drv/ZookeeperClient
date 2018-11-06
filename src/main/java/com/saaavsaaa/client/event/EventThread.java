@@ -63,7 +63,7 @@ class EventThread extends Thread {
                     logger.warn("case : there is not a listener that watch the event type : {}", event.getEventType());
                     listener = null;
                 }
-                if (listener == null || listener.ready()) {
+                if (listener != null && listener.ready()) {
                     eventExecutor.submit(new Runnable() {
                         @Override
                         public void run() {
