@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.retry;
 
+import com.saaavsaaa.client.utility.ThreadUtil;
 import com.saaavsaaa.client.zookeeper.operation.BaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class RetryThread extends Thread {
                 thread.setDaemon(true);
                 thread.setName("zk-retry-" + threadIndex.incrementAndGet());
                 logger.debug("new thread:{}", thread.getName());
+                thread.setUncaughtExceptionHandler(ThreadUtil.getUncaughtExceptionHandler());
                 return thread;
             }
         });

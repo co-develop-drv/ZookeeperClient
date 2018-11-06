@@ -45,7 +45,7 @@ public class AsyncRetryCenterTest {
     }
     
     @After
-    public void stop(){
+    public void stop() {
         client.close();
     }
     
