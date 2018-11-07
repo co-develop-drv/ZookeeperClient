@@ -1,9 +1,10 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.retry.TestCallable;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
 import com.saaavsaaa.client.retry.DelayRetryPolicy;
-import com.saaavsaaa.client.retry.TestCallable;
+import com.saaavsaaa.client.retry.TestResultCallable;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
 import com.saaavsaaa.client.zookeeper.section.Listener;
@@ -25,13 +26,13 @@ import java.util.List;
  */
 public class SyncRetryStrategyTest extends UsualClientTest{
     private IProvider provider;
-    
+
     @Before
     public void start() throws IOException, InterruptedException {
         testClient = createClient();
         provider = ((BaseClient)testClient).getStrategy().getProvider();
     }
-    
+
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
         Listener listener = TestSupport.buildListener();
@@ -39,7 +40,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         client.useExecStrategy(StrategyType.SYNC_RETRY);
         return client;
     }
-    
+
     @Test
     public void createChild() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
@@ -53,12 +54,12 @@ public class SyncRetryStrategyTest extends UsualClientTest{
             }
         };
         callable.exec();
-        
+
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
         new UsualStrategy(provider).deleteCurrentBranch(key);
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;
     }
-    
+
     @Test
     public void deleteBranch() throws KeeperException, InterruptedException {
         String keyB = "a/b/bb";
@@ -66,30 +67,30 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.createAllNeedPath(keyB, value, CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
-        
+
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
         String keyC  = "a/c/cc";
         new UsualStrategy(provider).createAllNeedPath(keyC, "ccc11", CreateMode.PERSISTENT);
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) != null;
-        
+
         TestCallable callable = getDeleteBranch(keyC);
         callable.exec();
-    
+
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false) == null;
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), false) != null;
-    
+
         callable = getDeleteBranch(keyB);
         callable.exec();
-        
+
         assert getZooKeeper(testClient).exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
         testClient.createAllNeedPath(keyB, "bbb11", CreateMode.PERSISTENT);
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false) != null;
-        
+
         callable.exec();
-        
+
         assert getZooKeeper(testClient).exists(PathUtil.checkPath(TestSupport.ROOT), false) == null;
     }
-    
+
     private TestCallable getDeleteBranch(final String key){
         TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
@@ -101,15 +102,15 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         };
         return callable;
     }
-    
+
     @Test
     public void isExisted() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.createAllNeedPath(key, "", CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
-    
-        TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
+
+        TestResultCallable callable = new TestResultCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
                 setResult(provider.exists(provider.getRealPath(key)));
@@ -117,31 +118,31 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         };
         System.out.println(callable.getResult());
         assert callable.getResult().equals(true);
-    
+
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.deleteCurrentBranch(key);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     }
-    
+
     @Test
     public void get() throws KeeperException, InterruptedException {
         String key = "a/b";
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.createAllNeedPath(key, "bbb11", CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
-        
-        TestCallable callable = getData("a");
+
+        TestResultCallable callable = getData("a");
         assert callable.getResult().equals("");
         callable = getData(key);
         assert callable.getResult().equals("bbb11");
-        
+
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.deleteCurrentBranch(key);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     }
-    
-    private TestCallable getData(final String key){
-        TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
+
+    private TestResultCallable getData(final String key){
+        TestResultCallable callable = new TestResultCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
                 setResult(new String(provider.getData(provider.getRealPath(key))));
@@ -149,18 +150,18 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         };
         return callable;
     }
-    
+
     @Test
     public void getChildrenKeys() throws KeeperException, InterruptedException {
         String key = "a/b";
         String current = "a";
-        
+
         testClient.useExecStrategy(StrategyType.USUAL);
         testClient.createAllNeedPath(key, "", CreateMode.PERSISTENT);
         testClient.createAllNeedPath("a/c", "", CreateMode.PERSISTENT);
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
-    
-        TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
+
+        TestResultCallable callable = new TestResultCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
                 setResult(provider.getChildren(provider.getRealPath(current)));
@@ -174,12 +175,12 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         });
         assert result.get(0).equals("c");
         assert result.get(1).equals("b");
-        
+
         testClient.useExecStrategy(StrategyType.USUAL);
-        testClient.deleteCurrentBranch(key);
+        testClient.deleteAllChildren(PathUtil.checkPath(TestSupport.ROOT));
         testClient.useExecStrategy(StrategyType.SYNC_RETRY);
     }
-    
+
     @Test
     public void update() throws KeeperException, InterruptedException {
         String key = "a";
@@ -190,7 +191,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         String data = testClient.getDataString(key);
         System.out.println(data);
         assert data.equals(value);
-        
+
         TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
@@ -198,11 +199,11 @@ public class SyncRetryStrategyTest extends UsualClientTest{
             }
         };
         callable.exec();
-    
+
         assert testClient.getDataString(key).equals(newValue);
         testClient.deleteCurrentBranch(key);
     }
-    
+
     @Test
     public void delAllChildren() throws KeeperException, InterruptedException {
         String key = "a/b/bb";
@@ -211,7 +212,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
         testClient.createAllNeedPath(key, "cc", CreateMode.PERSISTENT);
         System.out.println(getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), null).getNumChildren()); // nearest children count
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null;
-    
+
         TestCallable callable = new TestCallable(provider, DelayRetryPolicy.newNoInitDelayPolicy()) {
             @Override
             public void test() throws KeeperException, InterruptedException {
@@ -219,7 +220,7 @@ public class SyncRetryStrategyTest extends UsualClientTest{
             }
         };
         callable.exec();
-        
+
         assert getZooKeeper(testClient).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) == null;
         assert getZooKeeper(testClient).exists("/" + TestSupport.ROOT, false) != null;
         super.deleteRoot(testClient);

@@ -9,28 +9,20 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by aaa
  */
-public abstract class Callable<T> {
-    private static final Logger logger = LoggerFactory.getLogger(Callable.class);
+public abstract class RetryCallable {
+    private static final Logger logger = LoggerFactory.getLogger(RetryCallable.class);
 
     protected final DelayPolicyExecutor delayPolicyExecutor;
     protected final IProvider provider;
-    private T result;
-    public Callable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
+
+    public RetryCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {
         this.delayPolicyExecutor = new DelayPolicyExecutor(delayRetryPolicy);
         this.provider = provider;
     }
+
     public abstract void call() throws KeeperException, InterruptedException;
-    
-    public void setResult(T result) {
-        this.result = result;
-    }
-    public T getResult() throws KeeperException, InterruptedException {
-        if (result == null) {
-            exec();
-        }
-        return result;
-    }
-    
+
+
     public void exec() throws KeeperException, InterruptedException {
         try {
             call();
@@ -45,7 +37,7 @@ public abstract class Callable<T> {
             throw e;
         }
     }
-    
+
     protected void execDelay() throws KeeperException, InterruptedException {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
