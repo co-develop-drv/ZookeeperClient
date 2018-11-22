@@ -188,10 +188,11 @@ public final class PathTree {
     
     private void processNodeChange(final String path) {
         try {
-            String value = Constants.NOTHING_VALUE;
-            if (!path.equals(getRootNode().getKey())) {
-                value = provider.getDataString(path);
-            }
+//            String value = Constants.NOTHING_VALUE;
+//            if (!path.equals(getRootNode().getKey())) {
+//                value = provider.getDataString(path);
+//            }
+            String value = provider.getDataString(path); // due to getting value with registering a watcher
             put(path, value);
             // CHECKSTYLE:OFF
         } catch (Exception e) {
