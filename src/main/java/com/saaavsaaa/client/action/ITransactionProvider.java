@@ -1,22 +1,19 @@
 package com.saaavsaaa.client.action;
 
-import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
+import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 
 /*
  * Created by aaa
  */
 public interface ITransactionProvider extends IProvider {
     /**
-     * only create target node.
+     * Only create target node in transaction.
      *
      * @param key key
      * @param value value
-     * @param createMode createMode
-     * @param transaction transaction
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @param createMode create mode
+     * @param transaction zookeeper transaction
      */
-    void createInTransaction(String key, String value, CreateMode createMode, ZKTransaction transaction) throws KeeperException, InterruptedException;
+    void createInTransaction(String key, String value, CreateMode createMode, BaseTransaction transaction);
 }

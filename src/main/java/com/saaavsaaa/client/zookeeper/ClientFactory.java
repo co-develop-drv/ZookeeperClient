@@ -5,7 +5,7 @@ import com.saaavsaaa.client.retry.DelayRetryPolicy;
 import com.saaavsaaa.client.utility.constant.Constants;
 import com.saaavsaaa.client.zookeeper.core.BaseClientFactory;
 import com.saaavsaaa.client.zookeeper.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import org.apache.zookeeper.data.ACL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public class ClientFactory extends BaseClientFactory {
         return this;
     }
     
-    public ClientFactory watch(final Listener listener) {
+    public ClientFactory watch(final ZookeeperListener listener) {
         globalListener = listener;
         return this;
     }

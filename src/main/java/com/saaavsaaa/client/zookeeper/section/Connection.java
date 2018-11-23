@@ -42,12 +42,12 @@ public class Connection {
     /**
      * need retry.
      *
-     * @param e e
+     * @param keeperException keeperException
      * @return need retry
      * @throws KeeperException Zookeeper Exception
      */
-    public static boolean needRetry(final KeeperException e) throws KeeperException {
-        return exceptionResets.containsKey(e);
+    public static boolean needRetry(final KeeperException keeperException) throws KeeperException {
+        return exceptionResets.containsKey(keeperException.code().intValue());
     }
     
     @Deprecated
@@ -79,7 +79,7 @@ public class Connection {
     private void block() throws InterruptedException {
         logger.debug("block auto reconnection");
         final CountDownLatch autoReconnect = new CountDownLatch(1);
-        Listener listener = new Listener() {
+        ZookeeperListener listener = new ZookeeperListener() {
             @Override
             public void process(WatchedEvent event) {
                 autoReconnect.countDown();

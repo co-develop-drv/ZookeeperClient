@@ -23,6 +23,7 @@ public abstract class RetryResultCallable<T> extends RetryCallable {
         if (result == null) {
             exec();
         }
+        logger.debug("result:{}", result);
         return result;
     }
 }

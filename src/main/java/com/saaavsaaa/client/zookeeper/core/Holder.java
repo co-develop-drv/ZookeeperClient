@@ -1,9 +1,8 @@
 package com.saaavsaaa.client.zookeeper.core;
 
-import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.StringUtil;
-import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -51,22 +50,23 @@ public class Holder {
             logger.debug("Holder scheme:{},auth:{}", context.scheme, context.auth);
         }
     }
-    
+
     private Watcher startWatcher() {
         return new Watcher() {
+
+            @Override
             public void process(final WatchedEvent event) {
                 processConnection(event);
-                if (context.globalListener != null) {
-                    context.globalListener.process(event);
-                    logger.debug("BaseClient " + Constants.GLOBAL_LISTENER_KEY + " process");
+                if (!isConnected()) {
+                    return;
                 }
-                if (Properties.INSTANCE.watchOn()) {
-                    for (Listener listener : context.getWatchers().values()) {
-                        if (listener.getPath() == null || listener.getPath().equals(event.getPath())) {
-                            logger.debug("listener process:{}, listener:{}", listener.getPath(), listener.getKey());
-                            listener.process(event);
-                        }
-                    }
+                processGlobalListener(event);
+                // TODO filter event type or path
+                if (event.getType() == Event.EventType.None) {
+                    return;
+                }
+                if (Event.EventType.NodeDeleted == event.getType() || checkPath(event.getPath())) {
+                    processUsualListener(event);
                 }
             }
         };
@@ -93,6 +93,31 @@ public class Holder {
             }
         }
     }
+
+    private void processGlobalListener(final WatchedEvent event) {
+        if (null != context.getGlobalListener()) {
+            context.getGlobalListener().process(event);
+        }
+    }
+
+    private void processUsualListener(final WatchedEvent event) {
+        if (!context.getWatchers().isEmpty()) {
+            for (ZookeeperListener zookeeperListener : context.getWatchers().values()) {
+                if (null == zookeeperListener.getPath() || event.getPath().startsWith(zookeeperListener.getPath())) {
+                    logger.debug("listener process:{}, listener:{}", zookeeperListener.getPath(), zookeeperListener.getKey());
+                    zookeeperListener.process(event);
+                }
+            }
+        }
+    }
+
+    private boolean checkPath(final String path) {
+        try {
+            return null != zooKeeper.exists(path, true);
+        } catch (final KeeperException | InterruptedException ignore) {
+            return false;
+        }
+    }
     
     public void reset() throws IOException, InterruptedException {
         logger.debug("zk reset....................................");
@@ -103,12 +128,19 @@ public class Holder {
     
     public void close() {
         try {
+            zooKeeper.register(new Watcher() {
+
+                @Override
+                public void process(final WatchedEvent watchedEvent) {
+
+                }
+            });
             zooKeeper.close();
             connected.set(false);
             logger.debug("zk closed");
-            this.context.close();
-        } catch (Exception ee) {
-            logger.warn("Holder close:{}", ee.getMessage());
+            context.close();
+        } catch (final InterruptedException ex) {
+            logger.warn("Holder close:{}", ex.getMessage());
         }
     }
     

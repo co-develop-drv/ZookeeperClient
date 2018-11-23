@@ -19,9 +19,9 @@ public class TransactionProvider extends BaseProvider implements ITransactionPro
     public TransactionProvider(final String rootNode, final Holder holder, final boolean watched, final List<ACL> authorities) {
         super(rootNode, holder, watched, authorities);
     }
-    
+
     @Override
-    public void createInTransaction(final String key, final String value, final CreateMode createMode, final ZKTransaction transaction) throws KeeperException, InterruptedException {
+    public void createInTransaction(final String key, final String value, final CreateMode createMode, final BaseTransaction transaction) {
         transaction.create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
     }
     

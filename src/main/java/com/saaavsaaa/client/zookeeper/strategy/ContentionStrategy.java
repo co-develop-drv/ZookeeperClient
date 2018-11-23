@@ -146,21 +146,22 @@ public class ContentionStrategy extends UsualStrategy {
     }
     
     private void createBegin(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
-            provider.create(key, value, createMode);
+        // TODO start with /
+        if (!key.contains(Constants.PATH_SEPARATOR)) {
+            getProvider().create(key, value, createMode);
             return;
         }
-        List<String> nodes = provider.getNecessaryPaths(key);
+        List<String> nodes = getProvider().getNecessaryPaths(key);
         for (int i = 0; i < nodes.size(); i++) {
-            if (provider.exists(nodes.get(i))){
+            if (getProvider().exists(nodes.get(i))) {
                 logger.info("create node exist:{}", nodes.get(i));
                 continue;
             }
             logger.debug("create node not exist:", nodes.get(i));
-            if (i == nodes.size() - 1){
-                provider.create(nodes.get(i), value, createMode);
+            if (i == nodes.size() - 1) {
+                getProvider().create(nodes.get(i), value, createMode);
             } else {
-                provider.create(nodes.get(i), Constants.NOTHING_VALUE, createMode);
+                getProvider().create(nodes.get(i), Constants.NOTHING_VALUE, createMode);
             }
         }
     }

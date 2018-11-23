@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.utility.constant.StrategyType;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 
 import java.io.IOException;
@@ -12,57 +12,74 @@ import java.util.concurrent.TimeUnit;
  */
 public interface IClient extends IAction, IGroupAction {
     /**
-     * start.
+     * Start.
      *
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
     void start() throws IOException, InterruptedException;
-    
+
     /**
-     * block until connected.
+     * Start until out.
      *
-     * @param wait wait
-     * @param units units
-     * @return connected
-     * @throws IOException IO Exception
-     * @throws InterruptedException InterruptedException
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
      */
-    boolean start(int wait, TimeUnit units) throws IOException, InterruptedException;
-    
+    boolean start(int waitingTime, TimeUnit timeUnit) throws IOException, InterruptedException;
+
     /**
-     * close.
+     * Block until connected.
+     *
+     * @param waitingTime waiting time
+     * @param timeUnit time unit
+     * @return connected or not
+     * @throws InterruptedException interrupted exception
      */
-    void close();
-    
+    boolean blockUntilConnected(int waitingTime, TimeUnit timeUnit) throws InterruptedException;
+
     /**
-     * register watcher.
+     * Register watcher.
      *
      * @param key key
-     * @param listener listener
+     * @param eventListener zookeeper event listener
      */
-    void registerWatch(String key, Listener listener);
-    
+    void registerWatch(String key, ZookeeperListener eventListener);
+
     /**
-     * unregister watcher.
+     * Unregister watcher.
      *
      * @param key key
      */
     void unregisterWatch(String key);
-    
+
     /**
-     * choice exec strategy.
+     * Choice exec strategy.
      *
      * @param strategyType strategyType
      */
     void useExecStrategy(StrategyType strategyType);
-    
+
     /**
-     * create transaction.
+     * Get execution strategy.
      *
-     * @return BaseTransaction
+     * @return execution strategy
+     */
+    IExecStrategy getExecStrategy();
+
+    /**
+     * Create zookeeper transaction.
+     *
+     * @return zookeeper transaction
      */
     BaseTransaction transaction();
+
+    /**
+     * Close.
+     */
+    void close();
     /*
     void createNamespace();
     void deleteNamespace();

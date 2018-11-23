@@ -1,7 +1,7 @@
 package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
@@ -17,7 +17,7 @@ import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
  */
 public abstract class BaseClientFactory {
     protected BaseClient client;
-    protected Listener globalListener;
+    protected ZookeeperListener globalListener;
     protected String namespace;
     protected String scheme;
     protected byte[] auth;

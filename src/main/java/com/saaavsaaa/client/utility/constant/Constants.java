@@ -17,4 +17,5 @@ public final class Constants {
     public static final byte[] CHANGING_VALUE = new byte[]{'c'};
     public static final byte[] RELEASE_VALUE = new byte[]{'r'};
     public static final String CHANGING_KEY = "CHANGING_KEY";
+    public static final String ROOT_INIT_PATH = "/InitValue";
 }

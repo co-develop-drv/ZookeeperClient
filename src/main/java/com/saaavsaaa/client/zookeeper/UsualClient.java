@@ -1,8 +1,13 @@
 package com.saaavsaaa.client.zookeeper;
 
+import com.saaavsaaa.client.action.IExecStrategy;
+import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.core.BaseClient;
 import com.saaavsaaa.client.zookeeper.core.BaseContext;
+import com.saaavsaaa.client.zookeeper.provider.TransactionProvider;
+import com.saaavsaaa.client.zookeeper.section.ClientContext;
+import com.saaavsaaa.client.zookeeper.strategy.*;
 import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
@@ -13,15 +18,63 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by aaa
  */
 public class UsualClient extends BaseClient {
     private static final Logger logger = LoggerFactory.getLogger(UsualClient.class);
+
+    protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
+    protected IExecStrategy strategy;
     
     protected UsualClient(final BaseContext context) {
         super(context);
+    }
+
+    @Override
+    public synchronized void useExecStrategy(final StrategyType strategyType) {
+        logger.debug("useExecStrategy:{}", strategyType);
+        if (strategies.containsKey(strategyType)) {
+            strategy = strategies.get(strategyType);
+            return;
+        }
+
+        ITransactionProvider provider = new TransactionProvider(rootNode, holder, watched, authorities);
+        switch (strategyType) {
+            case USUAL: {
+                strategy = new UsualStrategy(provider);
+                break;
+            }
+            case CONTEND: {
+                strategy = new ContentionStrategy(provider);
+                break;
+            }
+            case TRANSACTION_CONTEND: {
+                strategy = new TransactionContendStrategy(provider);
+                break;
+            }
+            case SYNC_RETRY: {
+                strategy = new SyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
+                break;
+            }
+            case ASYNC_RETRY: {
+                strategy = new AsyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
+                break;
+            }
+            case ALL_ASYNC_RETRY: {
+                strategy = new AllAsyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
+                break;
+            }
+            default: {
+                strategy = new UsualStrategy(provider);
+                break;
+            }
+        }
+
+        strategies.put(strategyType, strategy);
     }
 
     @Override
@@ -119,9 +172,13 @@ public class UsualClient extends BaseClient {
         }
     }
     
-    
     @Override
     public BaseTransaction transaction() {
         return strategy.transaction();
+    }
+
+    @Override
+    public IExecStrategy getExecStrategy() {
+        return strategy;
     }
 }

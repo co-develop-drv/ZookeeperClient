@@ -2,7 +2,6 @@ package com.saaavsaaa.client.action;
 
 import com.saaavsaaa.client.election.LeaderElection;
 import com.saaavsaaa.client.zookeeper.transaction.BaseTransaction;
-import com.saaavsaaa.client.zookeeper.transaction.ZKTransaction;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -97,7 +96,7 @@ public interface IProvider {
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
      */
-    void update(String key, String value) throws KeeperException, InterruptedException;
+    boolean update(String key, String value) throws KeeperException, InterruptedException;
     
     /**
      * only delete target node..

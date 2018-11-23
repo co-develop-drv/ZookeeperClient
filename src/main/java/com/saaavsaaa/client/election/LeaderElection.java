@@ -1,11 +1,11 @@
 package com.saaavsaaa.client.election;
 
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.section.Listener;
-import com.saaavsaaa.client.utility.Properties;
-import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
 import com.saaavsaaa.client.utility.PathUtil;
+import com.saaavsaaa.client.utility.Properties;
 import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -18,64 +18,61 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class LeaderElection {
     private static final Logger logger = LoggerFactory.getLogger(LeaderElection.class);
-    private boolean done = false;
-    private int retryCount;
-    
-    public LeaderElection(){
-        retryCount = Properties.INSTANCE.getNodeElectionCount();
-    }
+    private int retryCount = Properties.INSTANCE.getNodeElectionCount();
 
-    private boolean contend(final String node, final IProvider provider, final Listener listener) throws KeeperException, InterruptedException {
-        boolean success = false;
-        try {
-            provider.create(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL); // todo EPHEMERAL_SEQUENTIAL check index value
-            success = true;
-        } catch (KeeperException.NodeExistsException e) {
-            logger.info("contend not success");
-            // TODO: or changing_key node value == current client id
-            provider.exists(node, WatcherCreator.deleteWatcher(listener));
-        }
-        return success;
-    }
-    
+    private boolean done;
+
     /**
-     * listener will be register when the contention of the path is unsuccessful.
+     * Listener will be register when the contention of the path is unsuccessful.
      *
-     * @param nodeBeContend nodeBeContend
+     * @param nodeBeContend node be contend
      * @param provider provider
-     * @throws KeeperException Zookeeper Exception
-     * @throws InterruptedException InterruptedException
+     * @throws KeeperException zookeeper exception
+     * @throws InterruptedException interrupted exception
      */
     public void executeContention(final String nodeBeContend, final IProvider provider) throws KeeperException, InterruptedException {
         boolean canBegin;
         final String realNode = provider.getRealPath(nodeBeContend);
-        final String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
-        canBegin = this.contend(contendNode, provider, new Listener(contendNode) {
+        String contendNode = PathUtil.getRealPath(realNode, Constants.CHANGING_KEY);
+        canBegin = contend(contendNode, provider, new ZookeeperListener(contendNode) {
+
             @Override
             public void process(final WatchedEvent event) {
                 try {
                     retryCount--;
                     if (retryCount < 0) {
-                        logger.info("Election node exceed retry count");
                         return;
                     }
                     executeContention(realNode, provider);
-                } catch (Exception ee) {
-                    logger.error("Listener Exception executeContention:{}", ee.getMessage(), ee);
+                } catch (final KeeperException | InterruptedException ex) {
+                    logger.error("Listener Exception executeContention:{}", ex.getMessage(), ex);
                 }
             }
         });
-    
         if (canBegin) {
             try {
                 action();
                 done = true;
                 callback();
-            } catch (Exception ee) {
-                logger.error("action Exception executeContention:{}", ee.getMessage(), ee);
+            } catch (final KeeperException | InterruptedException ex) {
+                logger.error("action Exception executeContention:{}", ex.getMessage(), ex);
             }
             provider.delete(contendNode);
         }
+    }
+
+    private boolean contend(final String node, final IProvider provider, final ZookeeperListener eventListener) throws KeeperException, InterruptedException {
+        boolean result = false;
+        try {
+            // TODO EPHEMERAL_SEQUENTIAL check index value
+            provider.create(node, Properties.INSTANCE.getClientId(), CreateMode.EPHEMERAL);
+            result = true;
+        } catch (final KeeperException.NodeExistsException ex) {
+            logger.info("contend not result");
+            // TODO or changing_key node value == current client id
+            provider.exists(node, WatcherCreator.deleteWatcher(eventListener));
+        }
+        return result;
     }
     
     /**

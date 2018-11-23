@@ -68,7 +68,7 @@ public class UsualStrategy extends BaseStrategy {
     
     @Override
     public void createAllNeedPath(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
-        if (key.indexOf(Constants.PATH_SEPARATOR) < -1){
+        if (!key.contains(Constants.PATH_SEPARATOR)){
             this.createCurrentOnly(key, value, createMode);
             return;
         }

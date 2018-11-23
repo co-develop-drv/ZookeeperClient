@@ -10,14 +10,14 @@ public interface IExecStrategy extends IAction, IGroupAction {
     /**
      * get provider.
      *
-     * @return IProvider
+     * @return provider
      */
     IProvider getProvider();
     
     /**
      * create transaction.
      *
-     * @return BaseTransaction
+     * @return zookeeper transaction
      */
     BaseTransaction transaction();
 }

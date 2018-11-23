@@ -25,7 +25,9 @@ public abstract class RetryCallable {
 
     public void exec() throws KeeperException, InterruptedException {
         try {
+            logger.debug("begin exec call");
             call();
+            logger.debug("end exec call");
         } catch (KeeperException e) {
             logger.warn("exec KeeperException:{}", e.getMessage());
             delayPolicyExecutor.next();
@@ -42,12 +44,8 @@ public abstract class RetryCallable {
         for (;;) {
             long delay = delayPolicyExecutor.getNextTick() - System.currentTimeMillis();
             if (delay > 0) {
-                try {
-                    logger.debug("exec delay:{}", delay);
-                    Thread.sleep(delay);
-                } catch (InterruptedException ee) {
-                    throw ee;
-                }
+                logger.debug("exec delay:{}", delay);
+                Thread.sleep(delay);
             } else {
                 if (delayPolicyExecutor.hasNext()) {
                     logger.debug("exec hasNext");

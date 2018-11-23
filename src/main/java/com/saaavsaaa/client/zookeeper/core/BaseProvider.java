@@ -65,6 +65,9 @@ public class BaseProvider implements IProvider {
     
     @Override
     public void create(final String key, final String value, final CreateMode createMode) throws KeeperException, InterruptedException {
+        if (exists(key)) {
+            return;
+        }
         holder.getZooKeeper().create(key, value.getBytes(Constants.UTF_8), authorities, createMode);
         logger.debug("BaseProvider createCurrentOnly:{}", key);
 //        create(key, value, createMode, new AtomicInteger());
@@ -89,8 +92,13 @@ public class BaseProvider implements IProvider {
     }
 
     @Override
-    public void update(final String key, final String value) throws KeeperException, InterruptedException {
-        holder.getZooKeeper().setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
+    public boolean update(final String key, final String value) throws KeeperException, InterruptedException {
+//        holder.getZooKeeper().setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
+        if (exists(key)) {
+            holder.getZooKeeper().setData(key, value.getBytes(Constants.UTF_8), Constants.VERSION);
+            return true;
+        }
+        return false;
     }
     
     @Override

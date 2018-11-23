@@ -1,18 +1,12 @@
 package com.saaavsaaa.client.zookeeper.core;
 
 import com.saaavsaaa.client.action.IClient;
-import com.saaavsaaa.client.action.IExecStrategy;
-import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.action.ITransactionProvider;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.StringUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
-import com.saaavsaaa.client.zookeeper.provider.TransactionProvider;
-import com.saaavsaaa.client.zookeeper.section.ClientContext;
-import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.section.WatcherCreator;
-import com.saaavsaaa.client.zookeeper.strategy.*;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -22,8 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -31,86 +23,64 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BaseClient implements IClient {
     private static final Logger logger = LoggerFactory.getLogger(BaseClient.class);
-    
-    protected final boolean watched = true; //false
-    protected final Map<StrategyType, IExecStrategy> strategies = new ConcurrentHashMap<>();
-    
-    protected IExecStrategy strategy;
-    protected BaseContext context;
+
+    private static final int CIRCLE_WAIT = 30;
     protected List<ACL> authorities;
-    protected Holder holder;
-    
-    protected String rootNode = "/InitValue";
     protected boolean rootExist = false;
-    
+    protected Holder holder;
+    protected String rootNode = Constants.ROOT_INIT_PATH;
+    protected BaseContext context;
+    protected final boolean watched = true; //false
+
     protected BaseClient(final BaseContext context) {
         this.context = context;
     }
     
     @Override
     public void start() throws IOException, InterruptedException {
-        holder = new Holder(getContext());
+        prepareStart();
         holder.start();
     }
     
     @Override
     public synchronized boolean start(final int wait, final TimeUnit units) throws InterruptedException, IOException {
-        holder = new Holder(getContext());
+        prepareStart();
         holder.start(wait, units);
         return holder.isConnected();
     }
-    
+
+    private void prepareStart() {
+        holder = new Holder(getContext());
+        useExecStrategy(StrategyType.USUAL);
+    }
+
+    @Override
+    public synchronized boolean blockUntilConnected(final int waitingTime, final TimeUnit timeUnit) throws InterruptedException {
+        long maxWait = timeUnit != null ? TimeUnit.MILLISECONDS.convert(waitingTime, timeUnit) : 0;
+        while (!holder.isConnected()) {
+            long waitTime = maxWait - CIRCLE_WAIT;
+            if (waitTime <= 0) {
+                return holder.isConnected();
+            }
+            wait(CIRCLE_WAIT);
+        }
+        return true;
+    }
+
     @Override
     public void close() {
-        holder.close();
         context.close();
-        this.strategies.clear();
+        try {
+            if (rootExist) {
+                this.deleteNamespace();
+            }
+        } catch (final KeeperException | InterruptedException ex) {
+            logger.error("zk client close delete root error:{}", ex.getMessage(), ex);
+        }
+        holder.close();
     }
     
-    @Override
-    public synchronized void useExecStrategy(final StrategyType strategyType) {
-        logger.debug("useExecStrategy:{}", strategyType);
-        if (strategies.containsKey(strategyType)) {
-            strategy = strategies.get(strategyType);
-            return;
-        }
-        
-        ITransactionProvider provider = new TransactionProvider(rootNode, holder, watched, authorities);
-        switch (strategyType) {
-            case USUAL: {
-                strategy = new UsualStrategy(provider);
-                break;
-            }
-            case CONTEND: {
-                strategy = new ContentionStrategy(provider);
-                break;
-            }
-            case TRANSACTION_CONTEND: {
-                strategy = new TransactionContendStrategy(provider);
-                break;
-            }
-            case SYNC_RETRY: {
-                strategy = new SyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
-                break;
-            }
-            case ASYNC_RETRY: {
-                strategy = new AsyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
-                break;
-            }
-            case ALL_ASYNC_RETRY: {
-                strategy = new AllAsyncRetryStrategy(provider, ((ClientContext)context).getDelayRetryPolicy());
-                break;
-            }
-            default: {
-                strategy = new UsualStrategy(provider);
-                break;
-            }
-        }
-        
-        strategies.put(strategyType, strategy);
-    }
-    
-    void registerWatch(final Listener globalListener) {
+    void registerWatch(final ZookeeperListener globalListener) {
         if (context.globalListener != null) {
             logger.warn("global listener can only register one");
             return;
@@ -120,7 +90,7 @@ public abstract class BaseClient implements IClient {
     }
     
     @Override
-    public void registerWatch(final String key, final Listener listener) {
+    public void registerWatch(final String key, final ZookeeperListener listener) {
         String path = PathUtil.getRealPath(rootNode, key);
         listener.setPath(path);
         context.getWatchers().put(listener.getKey(), listener);
@@ -159,7 +129,7 @@ public abstract class BaseClient implements IClient {
             rootExist = true;
             return;
         }
-        holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new Listener(rootNode) {
+        holder.zooKeeper.exists(rootNode, WatcherCreator.deleteWatcher(new ZookeeperListener(rootNode) {
             @Override
             public void process(final WatchedEvent event) {
                 rootExist = false;
@@ -169,7 +139,11 @@ public abstract class BaseClient implements IClient {
     }
     
     protected void deleteNamespace() throws KeeperException, InterruptedException {
-        holder.zooKeeper.delete(rootNode, Constants.VERSION);
+        try {
+            holder.getZooKeeper().delete(rootNode, Constants.VERSION);
+        } catch (final KeeperException.NodeExistsException | KeeperException.NotEmptyException ex) {
+            logger.info("delete root :{}", ex.getMessage());
+        }
         rootExist = false;
         logger.debug("delete root:{},rootExist:{}", rootNode, rootExist);
     }
@@ -186,9 +160,5 @@ public abstract class BaseClient implements IClient {
     
     public BaseContext getContext(){
         return context;
-    }
-    
-    public IExecStrategy getStrategy() {
-        return strategy;
     }
 }

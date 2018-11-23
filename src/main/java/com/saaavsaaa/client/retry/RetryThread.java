@@ -67,7 +67,7 @@ public class RetryThread extends Thread {
             });
         }
     }
-    
+
     // copy google
     final void addDelayedShutdownHook(final ExecutorService service, final long terminationTimeout, final TimeUnit timeUnit) {
         Thread thread = new Thread(new Runnable() {
