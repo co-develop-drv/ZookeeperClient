@@ -220,8 +220,9 @@ public class ContentionStrategy extends UsualStrategy {
                     logger.debug(ee.getMessage());
                     return;
                 }
+            } else {
+                logger.info("deleteBranch node not exist:{}", node);
             }
-            logger.info("deleteBranch node not exist:{}", node);
         }
     }
     

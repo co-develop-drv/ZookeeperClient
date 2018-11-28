@@ -7,7 +7,7 @@ import org.apache.zookeeper.KeeperException;
 /**
  * Created by aaa
  */
-public abstract class TestResultCallable extends RetryResultCallable {
+public abstract class TestResultCallable<T> extends RetryResultCallable<T> {
     private int count = 0;
 
     public TestResultCallable(final IProvider provider, final DelayRetryPolicy delayRetryPolicy) {

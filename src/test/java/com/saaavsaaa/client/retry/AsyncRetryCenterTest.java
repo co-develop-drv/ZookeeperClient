@@ -3,14 +3,13 @@ package com.saaavsaaa.client.retry;
 import com.saaavsaaa.client.TestServer;
 import com.saaavsaaa.client.action.IClient;
 import com.saaavsaaa.client.action.IProvider;
-import com.saaavsaaa.client.zookeeper.core.BaseProvider;
-import com.saaavsaaa.client.zookeeper.section.Listener;
 import com.saaavsaaa.client.utility.PathUtil;
 import com.saaavsaaa.client.utility.constant.Constants;
+import com.saaavsaaa.client.utility.constant.StrategyType;
 import com.saaavsaaa.client.zookeeper.ClientFactory;
 import com.saaavsaaa.client.zookeeper.TestSupport;
-import com.saaavsaaa.client.zookeeper.core.BaseClient;
-import com.saaavsaaa.client.utility.constant.StrategyType;
+import com.saaavsaaa.client.zookeeper.core.BaseProvider;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -31,14 +30,14 @@ public class AsyncRetryCenterTest {
     public void start() throws IOException, InterruptedException {
         TestServer.start();
         client = createClient();
-        provider = ((BaseClient)client).getStrategy().getProvider();
+        provider = client.getExecStrategy().getProvider();
         AsyncRetryCenter.INSTANCE.init(new DelayRetryPolicy(3, 3, 10));
         AsyncRetryCenter.INSTANCE.start();
     }
     
     protected IClient createClient() throws IOException, InterruptedException {
         ClientFactory creator = new ClientFactory();
-        Listener listener = TestSupport.buildListener();
+        ZookeeperListener listener = TestSupport.buildListener();
         IClient client = creator.setNamespace(TestSupport.ROOT).authorization(TestSupport.AUTH, TestSupport.AUTH.getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL).newClient(TestSupport.SERVERS, TestSupport.SESSION_TIMEOUT).watch(listener).start();
         client.useExecStrategy(StrategyType.ASYNC_RETRY);
         return client;

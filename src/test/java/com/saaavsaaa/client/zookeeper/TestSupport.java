@@ -1,6 +1,6 @@
 package com.saaavsaaa.client.zookeeper;
 
-import com.saaavsaaa.client.zookeeper.section.Listener;
+import com.saaavsaaa.client.zookeeper.section.ZookeeperListener;
 import org.apache.zookeeper.WatchedEvent;
 
 /**
@@ -12,14 +12,12 @@ public class TestSupport {
     public static final int SESSION_TIMEOUT = 200000;//ms
     public static final String ROOT = "test";
     
-    public static Listener buildListener(){
-        Listener listener = new Listener(null) {
+    public static ZookeeperListener buildListener(){
+        ZookeeperListener listener = new ZookeeperListener(null) {
             @Override
             public void process(WatchedEvent event) {
                 System.out.println("==========================================================");
-                System.out.println(event.getPath());
-                System.out.println(event.getState());
-                System.out.println(event.getType());
+                System.out.println(event.toString());
                 System.out.println("==========================================================");
             }
         };

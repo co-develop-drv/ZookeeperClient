@@ -41,7 +41,6 @@ public class TestHolder extends Holder {
                 this.setConnected(true);
                 System.out.println("processConnection connected0:" + this.isConnected());
                 CONNECTING.countDown();
-                return;
             }
         }
     }
