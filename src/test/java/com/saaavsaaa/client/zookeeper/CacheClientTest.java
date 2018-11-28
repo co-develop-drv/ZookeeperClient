@@ -32,29 +32,4 @@ public class CacheClientTest extends UsualClientTest {
         deleteRoot(testClient);
         checkChangeKey(testClient, PathUtil.checkPath(TestSupport.ROOT));
     }
-
-    @Ignore
-    @Test
-    public void assertPersist() throws KeeperException, InterruptedException {
-        String key = "a";
-        String value = "aa";
-        String newValue = "aaa";
-        if (!isExisted(key, testClient)) {
-            testClient.createAllNeedPath(key, value, CreateMode.PERSISTENT);
-        } else {
-            updateWithCheck(key, value, testClient);
-        }
-
-        assertThat(getDirectly(key, testClient), is(value));
-
-        updateWithCheck(key, newValue, testClient);
-
-        String path = PathUtil.getRealPath(TestSupport.ROOT, key);
-        assertThat(new String(getZooKeeper(testClient).getData(path, false, null), Constants.UTF_8)
-                , is(value));
-        sleep(200);
-
-        assertThat(getDirectly(key, testClient), is(newValue));
-        testClient.deleteCurrentBranch(key);
-    }
 }

@@ -115,4 +115,11 @@ public final class CacheClient extends UsualClient {
         logger.debug("getChildren cache not hit:{}", keys);
         return strategy.getChildren(PathUtil.getRealPath(rootNode, key));
     }
+
+    @Override
+    public void update(final String key, final String value) throws KeeperException, InterruptedException {
+        strategy.update(key, value);
+        String path = PathUtil.getRealPath(rootNode, key);
+        pathTree.put(path, value);
+    }
 }
