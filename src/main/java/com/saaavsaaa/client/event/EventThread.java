@@ -1,5 +1,6 @@
 package com.saaavsaaa.client.event;
 
+import com.saaavsaaa.client.utility.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +19,17 @@ class EventThread extends Thread {
     private final static Logger logger = LoggerFactory.getLogger(EventCenter.class);
     private final Map<Enum, EventListener> listeners = new ConcurrentHashMap<>();
     private final ThreadPoolExecutor eventExecutor;
-    private final int corePoolSize = Runtime.getRuntime().availableProcessors();
-    private final int maximumPoolSize = corePoolSize;
     private final long keepAliveTime = 0;
     private final int closeDelay = 60;
     private final LinkedBlockingQueue<Event> queue;
+    private final int corePoolSize = Runtime.getRuntime().availableProcessors();
+    private int maximumPoolSize = corePoolSize;
     
     EventThread(final LinkedBlockingQueue<Event> queue){
         this.queue = queue;
+        if (Properties.INSTANCE.getEventThreadPoolSize() > 0) {
+            maximumPoolSize = Properties.INSTANCE.getEventThreadPoolSize();
+        }
         eventExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
             private final AtomicInteger threadIndex = new AtomicInteger(0);
             @Override
