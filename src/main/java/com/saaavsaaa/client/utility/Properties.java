@@ -54,4 +54,12 @@ public enum Properties {
         }
         return Integer.valueOf(result);
     }
+
+    public int getEventThreadPoolSize() {
+        String result = bundle.getString("event.thread.pool.size");
+        if (StringUtil.isNullOrBlank(result)) {
+            return 0;
+        }
+        return Integer.valueOf(result);
+    }
 }

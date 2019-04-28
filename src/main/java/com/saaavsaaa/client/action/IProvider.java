@@ -93,6 +93,7 @@ public interface IProvider {
      *
      * @param key key
      * @param value value
+     * @return success or not
      * @throws KeeperException Zookeeper Exception
      * @throws InterruptedException InterruptedException
      */

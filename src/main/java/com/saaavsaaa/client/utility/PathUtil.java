@@ -217,7 +217,7 @@ public class PathUtil {
     /*
     * ignore invalid char and // /./  /../
     *
-    * @param path
+    * @param path path
     * @return path
     */
     public static String checkPath(String path) throws IllegalArgumentException {
