@@ -62,4 +62,12 @@ public enum Properties {
         }
         return Integer.valueOf(result);
     }
+
+    public String getSessionUser() {
+        return bundle.getString("login.session.user");
+    }
+
+    public String getSessionToken() {
+        return bundle.getString("login.token.key");
+    }
 }

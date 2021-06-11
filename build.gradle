@@ -18,7 +18,7 @@
 group 'com.saaavsaaa'
 //version '1.0-SNAPSHOT'
 //version '2.1-RELEASE'
-version '2.3'
+version '2.6'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -34,6 +34,9 @@ dependencies {
 //    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.3.0'
 //    compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.4.12'
     compile group: 'org.apache.zookeeper', name: 'zookeeper', version: '3.5.3-beta'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 //    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
