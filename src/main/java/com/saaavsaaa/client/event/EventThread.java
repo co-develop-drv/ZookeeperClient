@@ -24,13 +24,14 @@ class EventThread extends Thread {
     private final LinkedBlockingQueue<Event> queue;
     private final int corePoolSize = Runtime.getRuntime().availableProcessors();
     private int maximumPoolSize = corePoolSize;
+    private int cacheQueueSize = maximumPoolSize;
     
     EventThread(final LinkedBlockingQueue<Event> queue){
         this.queue = queue;
         if (Properties.INSTANCE.getEventThreadPoolSize() > 0) {
             maximumPoolSize = Properties.INSTANCE.getEventThreadPoolSize();
         }
-        eventExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(10), new ThreadFactory() {
+        eventExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(cacheQueueSize), new ThreadFactory() {
             private final AtomicInteger threadIndex = new AtomicInteger(0);
             @Override
             public Thread newThread(Runnable r) {

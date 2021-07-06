@@ -70,4 +70,12 @@ public enum Properties {
     public String getSessionToken() {
         return bundle.getString("login.token.key");
     }
+
+    public int getEventThreadCacheSize() {
+        String result = bundle.getString("event.thread.cache.size");
+        if (StringUtil.isNullOrBlank(result)) {
+            return 0;
+        }
+        return Integer.parseInt(result);
+    }
 }
